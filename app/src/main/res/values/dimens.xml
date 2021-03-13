@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="contact_height">160dp</dimen>
+    <dimen name="contact_margin">6dp</dimen>
+    <dimen name="contact_image_padding">4dp</dimen>
+    <dimen name="contact_text_view_padding">10dp</dimen>
+    <dimen name="contact_text_size">20sp</dimen>
+    <dimen name="image_view_layout_width">150dp</dimen>
+</resources>
