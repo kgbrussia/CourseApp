@@ -1,3 +1,15 @@
 <resources>
-    <string name="app_name">CourseApp</string>
+    <string name="app_name">Fragment App</string>
+
+    <!-- Contact List Screen -->
+    <string name="contact_list_title">Список контактов</string>
+    <string name="contact_list_c1_name">Bruce Wayne</string>
+    <string name="contact_list_c1_phone1">+79123456789</string>
+
+    <!-- Contact Details Screen -->
+    <string name="contact_details_title">Детали контакта</string>
+    <string name="contact_details_c1_phone2">+79123456234</string>
+    <string name="contact_details_c1_email1">email</string>
+    <string name="contact_details_c1_email2">email2</string>
+
 </resources>

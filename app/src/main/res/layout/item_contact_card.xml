@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:id="@+id/contactCard"
+    android:layout_height="@dimen/contact_height"
+    android:layout_margin="@dimen/contact_margin"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <ImageView
+        android:id="@+id/imageViewPhoto"
+        android:layout_width="@dimen/image_view_layout_width"
+        android:layout_height="match_parent"
+        android:contentDescription="@string/contact_list_c1_name"
+        android:padding="@dimen/contact_image_padding"
+        android:src="@drawable/batman"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:src="@drawable/batman" />
+
+    <TextView
+        android:id="@+id/textViewName"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/contact_margin"
+        android:padding="@dimen/contact_text_view_padding"
+        android:text="@string/contact_list_c1_name"
+        android:textAlignment="gravity"
+        android:textAllCaps="false"
+        android:textSize="@dimen/contact_text_size"
+        app:autoSizeTextType="none"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/imageViewPhoto"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/textViewPhoneNumber"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/contact_margin"
+        android:padding="@dimen/contact_text_view_padding"
+        android:text="@string/contact_list_c1_phone1"
+        android:textAlignment="gravity"
+        android:textSize="@dimen/contact_text_size"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/imageViewPhoto"
+        app:layout_constraintTop_toBottomOf="@+id/textViewName" />
+</androidx.constraintlayout.widget.ConstraintLayout>
