@@ -61,10 +61,6 @@ class ContactListFragment : Fragment() {
         fun onSuccess(list: List<Contact>)
     }
 
-    interface GetContactListListener {
-        fun getContactList(list: String)
-    }
-
     companion object{
         fun newInstance() = ContactListFragment()
     }

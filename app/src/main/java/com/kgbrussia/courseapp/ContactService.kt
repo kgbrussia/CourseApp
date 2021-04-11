@@ -14,25 +14,25 @@ class ContactService : Service() {
 
     fun getContactList(getContactListListener: ContactListFragment.GetContactListListener?) {
         val weakReferenceListener = WeakReference(getContactListListener)
-        thread {
+        Thread {
             Thread.sleep(SERVICE_THREAD_DELAY)
             weakReferenceListener.get()?.onSuccess(createContacts())
-        }
+        }.start()
     }
 
     fun getInfoById(getDetailsByIdListener: ContactDetailsFragment.GetDetailsByIdListener?) {
         val weakReferenceListener = WeakReference(getDetailsByIdListener)
-        thread {
+        Thread {
             Thread.sleep(SERVICE_THREAD_DELAY)
             weakReferenceListener.get()?.onSuccess(createContacts())
-        }
+        }.start()
     }
 
     private fun createContacts(): List<Contact> =
         listOf(
-            Contact(123,getString(R.string.contact_list_c1_name),getString(R.string.contact_list_c1_phone1)),
-            Contact(234,getString(R.string.contact_list_c2_name),getString(R.string.contact_list_c2_phone1)),
-            Contact(356,getString(R.string.contact_list_c3_name),getString(R.string.contact_list_c3_phone1))
+            Contact(123,getString(R.string.contact_list_c1_name),getString(R.string.contact_list_c1_phone1),11,4),
+            Contact(234,getString(R.string.contact_list_c2_name),getString(R.string.contact_list_c2_phone1),24,8),
+            Contact(356,getString(R.string.contact_list_c3_name),getString(R.string.contact_list_c3_phone1),5,10)
         )
 
     override fun onBind(intent: Intent): IBinder {
