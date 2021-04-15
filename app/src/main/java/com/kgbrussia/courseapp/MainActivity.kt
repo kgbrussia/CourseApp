@@ -30,11 +30,11 @@ class MainActivity : AppCompatActivity(),
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        if(intent.extras?.containsKey(ID_ARG) == true && savedInstanceState == null) {
+        val startedFromNotification: Boolean = intent.extras?.containsKey(ID_ARG) ?: false
+        if(savedInstanceState == null){
             initStartFragment()
-            startContactDetailsFromNotification(intent)
-        } else if(savedInstanceState == null) {
-            initStartFragment()
+            if(startedFromNotification)
+                startContactDetailsFromNotification(intent)
         }
         initContactService()
     }

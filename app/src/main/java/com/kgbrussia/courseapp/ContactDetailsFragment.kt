@@ -43,8 +43,9 @@ class ContactDetailsFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         buttonReminder = view.findViewById(R.id.button_birthday_reminder)
-        loadContactInfoById(arguments?.getString(ID_ARG)!!.toInt())
+        loadContactInfoById((arguments?.getString(ID_ARG) ?: "123").toInt())
         updateButtonState()
+        buttonReminder?.setOnClickListener { clickOnNotificationButton() }
     }
 
     override fun onDestroy() {
@@ -53,11 +54,12 @@ class ContactDetailsFragment : Fragment() {
     }
 
     private fun updateButtonState() {
-        isNotificationsEnabled = PendingIntent.getBroadcast(context, contactId, Intent(activity, ContactBroadcastReceiver::class.java), PendingIntent.FLAG_NO_CREATE) != null
+        isNotificationsEnabled = PendingIntent.getBroadcast(context, contactId,
+            Intent(activity, ContactBroadcastReceiver::class.java), PendingIntent.FLAG_NO_CREATE) != null
         if(isNotificationsEnabled) {
-            buttonReminder!!.text = getString(R.string.turn_off_notifications)
+            buttonReminder?.text = getString(R.string.turn_off_notifications)
         } else {
-            buttonReminder!!.text = getString(R.string.turn_on_notifications)
+            buttonReminder?.text = getString(R.string.turn_on_notifications)
         }
     }
 
@@ -65,12 +67,12 @@ class ContactDetailsFragment : Fragment() {
         val pendingIntent = createPendingIntent()
         val alarmManager = context?.getSystemService(Context.ALARM_SERVICE) as? AlarmManager
         if(isNotificationsEnabled) {
-            buttonReminder!!.text = getString(R.string.turn_on_notifications)
+            buttonReminder?.text = getString(R.string.turn_on_notifications)
             isNotificationsEnabled = false
             alarmManager?.cancel(pendingIntent)
             pendingIntent.cancel()
         } else {
-            buttonReminder!!.text = getString(R.string.turn_off_notifications)
+            buttonReminder?.text = getString(R.string.turn_off_notifications)
             isNotificationsEnabled = true
             alarmManager?.set(AlarmManager.RTC_WAKEUP, nextCalendarBirthday().timeInMillis, pendingIntent)
         }
@@ -79,15 +81,15 @@ class ContactDetailsFragment : Fragment() {
     private fun createPendingIntent(): PendingIntent {
         val intent = Intent(activity, ContactBroadcastReceiver::class.java)
         intent.putExtra(ID_ARG, contactId)
-        intent.putExtra(CONTACT_NAME, currentContact!!.name)
+        intent.putExtra(CONTACT_NAME, currentContact?.name)
         return PendingIntent.getBroadcast(context, contactId, intent, 0)
     }
 
     private fun nextCalendarBirthday(): Calendar {
         val currentCalendar = GregorianCalendar.getInstance()
         val birthdayCalendar = GregorianCalendar.getInstance()
-        birthdayCalendar.set(Calendar.DAY_OF_MONTH, currentContact!!.dayOfBirthday!!)
-        birthdayCalendar.set(Calendar.MONTH, currentContact!!.monthOfBirthday!!)
+        birthdayCalendar.set(Calendar.DAY_OF_MONTH, currentContact?.dayOfBirthday ?: 1)
+        birthdayCalendar.set(Calendar.MONTH, currentContact?.monthOfBirthday ?: 1)
         birthdayCalendar.set(Calendar.HOUR_OF_DAY, 14)
         birthdayCalendar.set(Calendar.MINUTE, 40)
         birthdayCalendar.set(Calendar.SECOND, 20)
@@ -109,7 +111,6 @@ class ContactDetailsFragment : Fragment() {
                     })
                 }
             }
-            buttonReminder!!.setOnClickListener { clickOnNotificationButton() }
         }
     })
 

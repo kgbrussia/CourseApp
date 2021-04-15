@@ -4,6 +4,6 @@ data class Contact(
     val id: Int,
     val name: String,
     val phone: String,
-    val dayOfBirthday: Int?,
-    val monthOfBirthday: Int?
+    val dayOfBirthday: Int,
+    val monthOfBirthday: Int
 )
