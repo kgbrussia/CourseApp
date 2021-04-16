@@ -15,4 +15,10 @@
     <string name="contact_details_c1_phone2">+79123456234</string>
     <string name="contact_details_c1_email1">email</string>
     <string name="contact_details_c1_email2">email2</string>
+    <string name="turn_on_notifications">Turn on notifications</string>
+    <string name="turn_off_notifications">Turn off notifications</string>
+
+    <!-- Contact Broadcast Receiver -->
+    <string name="notification_channel_name">notification channel name</string>
+    <string name="notification_text">Today birthday of %1$s</string>
 </resources>

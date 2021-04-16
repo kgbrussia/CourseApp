@@ -30,8 +30,13 @@ class MainActivity : AppCompatActivity(),
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        val startedFromNotification: Boolean = intent.extras?.containsKey(ID_ARG) ?: false
+        if(savedInstanceState == null){
+            initStartFragment()
+            if(startedFromNotification)
+                startContactDetailsFromNotification(intent)
+        }
         initContactService()
-        if (savedInstanceState == null) initStartFragment()
     }
 
     fun initContactService(){
@@ -53,6 +58,15 @@ class MainActivity : AppCompatActivity(),
             unbindService(connection)
             bound = false
         }
+    }
+
+    private fun startContactDetailsFromNotification(intent: Intent?) {
+        val fragmentManager = supportFragmentManager
+        if(fragmentManager.backStackEntryCount==1) {
+            fragmentManager.popBackStack()
+        }
+        val id: String = requireNotNull(intent?.extras?.getString(ID_ARG))
+        onContactClicked(id)
     }
 
     override fun getService(): ContactService? = contactService

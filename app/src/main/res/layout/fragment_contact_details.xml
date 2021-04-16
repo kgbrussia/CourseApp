@@ -82,10 +82,9 @@
         android:text=""
         android:textAlignment="gravity"
         android:textSize="@dimen/contact_text_size"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textViewDescription" />
+        app:layout_constraintTop_toBottomOf="@+id/textViewSecondEmail" />
 
     <TextView
         android:id="@+id/textViewDescription"
@@ -97,5 +96,15 @@
         android:textSize="@dimen/contact_text_size"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textViewSecondEmail" />
+        app:layout_constraintTop_toBottomOf="@+id/textViewThirdEmail" />
+
+    <Button
+        android:id="@+id/button_birthday_reminder"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/turn_on_notifications"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textViewDescription" />
 </androidx.constraintlayout.widget.ConstraintLayout>
