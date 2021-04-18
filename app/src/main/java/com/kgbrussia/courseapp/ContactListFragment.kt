@@ -7,11 +7,33 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import android.Manifest
+import android.content.pm.PackageManager
+import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.content.ContextCompat
 
 class ContactListFragment : Fragment() {
 
     private var onContactClicked: OnContactClickedListener? = null
     private var serviceInterface: ContactService.ServiceInterface? = null
+    private var isContactPermissionGranted = true
+    private var displayer: ContactPermissionDialog.PermissionDialogDisplayer? = null
+    val requestPermissionLauncher = registerForActivityResult(ActivityResultContracts.RequestPermission()) {
+            isGranted: Boolean ->
+        if (isGranted) {
+            loadContacts()
+        } else {
+            when {
+                shouldShowRequestPermissionRationale(Manifest.permission.READ_CONTACTS) -> {
+                    displayer?.displayPermissionDialog(R.string.contactPermissionDialogList)
+                }
+                else -> {
+                    Toast.makeText(context, getString(R.string.noAccessGranted), Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+    }
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -21,6 +43,17 @@ class ContactListFragment : Fragment() {
         if(context is ContactService.ServiceInterface){
             serviceInterface = context
         }
+        if(context is ContactPermissionDialog.PermissionDialogDisplayer) {
+            displayer = context
+        }
+    }
+
+    override fun onDetach() {
+        super.onDetach()
+        onContactClicked = null
+        serviceInterface = null
+        displayer = null
+        requestPermissionLauncher.unregister()
     }
 
     override fun onCreateView(
@@ -32,14 +65,25 @@ class ContactListFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        loadContacts()
         view.findViewById<View>(R.id.contactCard).setOnClickListener {onContactClicked?.onContactClicked("123")}
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        onContactClicked = null
-        serviceInterface = null
+    override fun onStart() {
+        super.onStart()
+        isContactPermissionGranted = arguments?.getBoolean(CONTACT_PERMISSION) ?: true
+        when {
+            ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.READ_CONTACTS) == PackageManager.PERMISSION_GRANTED -> {
+                loadContacts()
+            }
+            shouldShowRequestPermissionRationale(Manifest.permission.READ_CONTACTS) -> {
+                displayer?.displayPermissionDialog(R.string.contactPermissionDialogList)
+            }
+            else -> {
+                if(isContactPermissionGranted) {
+                    requestPermissionLauncher.launch(Manifest.permission.READ_CONTACTS)
+                }
+            }
+        }
     }
 
     fun loadContacts() = serviceInterface?.getService()?.getContactList(object: GetContactListListener{
@@ -62,6 +106,14 @@ class ContactListFragment : Fragment() {
     }
 
     companion object{
-        fun newInstance() = ContactListFragment()
+        fun newInstance(): ContactListFragment = ContactListFragment()
+
+        fun newInstance(isContactPermissionGranted: Boolean): ContactListFragment {
+            val args = Bundle()
+            args.putBoolean(CONTACT_PERMISSION, isContactPermissionGranted)
+            val fragment = ContactListFragment()
+            fragment.arguments = args
+            return fragment
+        }
     }
 }
