@@ -1,0 +1,93 @@
+package com.kgbrussia.courseapp
+
+import android.content.ContentResolver
+import android.database.Cursor
+import android.provider.ContactsContract.Contacts
+import android.provider.ContactsContract.CommonDataKinds
+import android.provider.ContactsContract.Data
+
+object ContactResolver {
+    private const val DATA_CONTACT_ID = "${Data.CONTACT_ID}="
+    private const val GET_LIST_PHONES_SELECTION = "${CommonDataKinds.Phone.CONTACT_ID} = ?"
+    private const val GET_BIRTHDAY_DATE_SELECTION = " AND ${Data.MIMETYPE}= '${CommonDataKinds.Event.CONTENT_ITEM_TYPE}' AND ${CommonDataKinds.Event.TYPE}=${CommonDataKinds.Event.TYPE_BIRTHDAY}"
+
+    fun getContactsList(contentResolver: ContentResolver): List<Contact> {
+        val contactsList = mutableListOf<Contact>()
+        contentResolver.query(
+            Contacts.CONTENT_URI,
+            null,
+            null,
+            null,
+            null
+        )?.use {
+            while (it.moveToNext()) {
+                val contact = it.toContactForList(contentResolver)
+                if(contact != null) {
+                    contactsList.add(contact)
+                }
+            }
+        }
+        return contactsList
+    }
+
+    private fun getPhoneNumber(contentResolver: ContentResolver, id: String): String? {
+        var phoneNumber: String? = null
+        contentResolver.query(
+            CommonDataKinds.Phone.CONTENT_URI,
+            null,
+            GET_LIST_PHONES_SELECTION,
+            arrayOf(id),
+            null
+        )?.use {
+            if (it.moveToNext()) {
+                phoneNumber = it.getString(it.getColumnIndex(CommonDataKinds.Phone.NUMBER))
+            }
+        }
+        return phoneNumber
+    }
+
+    private fun getBirthdayDate(contentResolver: ContentResolver, id: String): String? {
+        var birthday: String? = null
+        contentResolver.query(
+            Data.CONTENT_URI,
+            arrayOf(CommonDataKinds.Event.DATA),
+            DATA_CONTACT_ID + id + GET_BIRTHDAY_DATE_SELECTION,
+            null,
+            null
+        )?.use {
+            while (it.moveToNext()) {
+                birthday =
+                    it.getString(it.getColumnIndex(CommonDataKinds.Event.START_DATE))
+            }
+        }
+        return birthday
+    }
+
+    private fun Cursor.toContactForList(contentResolver: ContentResolver): Contact? {
+        val id = getString(getColumnIndex(Contacts._ID)) ?: return null
+        return Contact(
+            id = id.toInt(),
+            name = getString(getColumnIndex(Contacts.DISPLAY_NAME)) ?: "",
+            phone = getPhoneNumber(contentResolver, id) ?: "",
+            dayOfBirthday = null,
+            monthOfBirthday = null
+        )
+    }
+
+    private fun Cursor.toContact(contentResolver: ContentResolver, id: String): Contact {
+        var dayOfBirthday: Int? = null
+        var monthOfBirthday: Int? = null
+        val birthdayList = getBirthdayDate(contentResolver, id)?.split(Regex("-+"))
+        if(birthdayList?.size == 3) {
+            monthOfBirthday = birthdayList[1].toIntOrNull()
+            dayOfBirthday = birthdayList[2].toIntOrNull()
+        }
+        return Contact(
+            id = id.toInt(),
+            name = getString(getColumnIndex(Contacts.DISPLAY_NAME)) ?: "",
+            phone = getPhoneNumber(contentResolver, id) ?: "",
+            dayOfBirthday = dayOfBirthday,
+            monthOfBirthday = monthOfBirthday
+        )
+    }
+}
