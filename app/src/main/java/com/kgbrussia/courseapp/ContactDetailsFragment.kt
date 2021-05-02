@@ -37,7 +37,7 @@ class ContactDetailsFragment : Fragment() {
     val requestPermissionLauncher = registerForActivityResult(ActivityResultContracts.RequestPermission()) {
             isGranted: Boolean ->
         if (isGranted) {
-            loadContactInfoById((arguments?.getString(ID_ARG) ?: "123").toInt())
+            loadContactInfoById((requireArguments().getString(ID_ARG) ?: "123").toInt())
         } else {
             when {
                 shouldShowRequestPermissionRationale(Manifest.permission.READ_CONTACTS) -> {
@@ -71,7 +71,7 @@ class ContactDetailsFragment : Fragment() {
         super.onStart()
         when {
             ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.READ_CONTACTS) == PackageManager.PERMISSION_GRANTED -> {
-                loadContactInfoById((arguments?.getString(ID_ARG) ?: "123").toInt())
+                loadContactInfoById((requireArguments().getString(ID_ARG) ?: "123").toInt())
             }
             shouldShowRequestPermissionRationale(Manifest.permission.READ_CONTACTS) -> {
                 displayer?.displayPermissionDialog(R.string.contactPermissionDialogDetails)

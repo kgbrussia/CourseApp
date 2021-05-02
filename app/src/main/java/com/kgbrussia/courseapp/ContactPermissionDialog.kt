@@ -3,6 +3,7 @@ package com.kgbrussia.courseapp
 import android.app.AlertDialog
 import android.app.Dialog
 import android.os.Bundle
+import androidx.core.os.bundleOf
 import androidx.fragment.app.DialogFragment
 
 const val TITLE_DIALOG = "TITLE_DIALOG"
@@ -10,7 +11,7 @@ const val TITLE_DIALOG = "TITLE_DIALOG"
 class ContactPermissionDialog : DialogFragment() {
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        val message = requireNotNull(arguments?.getInt(TITLE_DIALOG))
+        val message = requireNotNull(requireArguments().getInt(TITLE_DIALOG))
         return AlertDialog.Builder(activity)
             .setTitle(R.string.contactPermissionDialogTitle)
             .setMessage(message)
@@ -28,12 +29,8 @@ class ContactPermissionDialog : DialogFragment() {
     }
 
     companion object {
-        fun newInstance(message: Int): ContactPermissionDialog {
-            val fragment = ContactPermissionDialog()
-            val args = Bundle()
-            args.putInt(TITLE_DIALOG, message)
-            fragment.arguments = args
-            return fragment
+        fun newInstance(message: Int) = ContactPermissionDialog().apply {
+            arguments = bundleOf(TITLE_DIALOG to message)
         }
     }
 }
