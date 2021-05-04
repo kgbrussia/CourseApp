@@ -21,4 +21,11 @@
     <!-- Contact Broadcast Receiver -->
     <string name="notification_channel_name">notification channel name</string>
     <string name="notification_text">Today birthday of %1$s</string>
+
+    <!-- Contact Permission Dialog -->
+    <string name="contactPermissionDialogTitle">Access to Contacts</string>
+    <string name="contactPermissionDialogList">To download the contact list, you need to allow access to Contacts</string>
+    <string name="contactPermissionDialogDetails">To download contact details , you need to allow access to Contacts</string>
+    <string name="contactPermissionDialogButton">Grant access</string>
+    <string name="noAccessGranted">No access granted!</string>
 </resources>

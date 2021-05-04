@@ -16,7 +16,7 @@ class ContactService : Service() {
         val weakReferenceListener = WeakReference(getContactListListener)
         Thread {
             Thread.sleep(SERVICE_THREAD_DELAY)
-            weakReferenceListener.get()?.onSuccess(createContacts())
+            weakReferenceListener.get()?.onSuccess(ContactResolver.getContactsList(contentResolver))
         }.start()
     }
 
@@ -24,7 +24,7 @@ class ContactService : Service() {
         val weakReferenceListener = WeakReference(getDetailsByIdListener)
         Thread {
             Thread.sleep(SERVICE_THREAD_DELAY)
-            weakReferenceListener.get()?.onSuccess(createContacts())
+            weakReferenceListener.get()?.onSuccess(ContactResolver.getContactsList(contentResolver))
         }.start()
     }
 
