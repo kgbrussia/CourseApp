@@ -1,6 +1,7 @@
 package com.kgbrussia.courseapp
 
 import android.content.ContentResolver
+import android.content.Context
 import android.database.Cursor
 import android.provider.ContactsContract.Contacts
 import android.provider.ContactsContract.CommonDataKinds
@@ -8,12 +9,13 @@ import android.provider.ContactsContract.Data
 
 object ContactResolver {
     private const val DATA_CONTACT_ID = "${Data.CONTACT_ID}="
+    private const val FIND_CONTACT_BY_ID_SELECTION = "${Contacts._ID} = ?"
     private const val GET_LIST_PHONES_SELECTION = "${CommonDataKinds.Phone.CONTACT_ID} = ?"
     private const val GET_BIRTHDAY_DATE_SELECTION = " AND ${Data.MIMETYPE}= '${CommonDataKinds.Event.CONTENT_ITEM_TYPE}' AND ${CommonDataKinds.Event.TYPE}=${CommonDataKinds.Event.TYPE_BIRTHDAY}"
 
-    fun getContactsList(contentResolver: ContentResolver): List<Contact> {
+    fun getContactsList(context: Context): List<Contact> {
         val contactsList = mutableListOf<Contact>()
-        contentResolver.query(
+        context.contentResolver.query(
             Contacts.CONTENT_URI,
             null,
             null,
@@ -21,13 +23,29 @@ object ContactResolver {
             null
         )?.use {
             while (it.moveToNext()) {
-                val contact = it.toContactForList(contentResolver)
+                val contact = it.toContactForList(context.contentResolver)
                 if(contact != null) {
                     contactsList.add(contact)
                 }
             }
         }
         return contactsList
+    }
+
+    fun findContactById(context: Context, id: String): Contact? {
+        var contact: Contact? = null
+        context.contentResolver.query(
+            Contacts.CONTENT_URI,
+            arrayOf(Contacts.DISPLAY_NAME),
+            FIND_CONTACT_BY_ID_SELECTION,
+            arrayOf(id),
+            null
+        )?.use {
+            while (it.moveToNext()) {
+                contact = it.toContact(context.contentResolver, id)
+            }
+        }
+        return contact
     }
 
     private fun getPhoneNumber(contentResolver: ContentResolver, id: String): String? {

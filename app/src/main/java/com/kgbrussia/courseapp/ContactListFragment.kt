@@ -12,13 +12,21 @@ import android.content.pm.PackageManager
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 
 class ContactListFragment : Fragment() {
 
     private var onContactClicked: OnContactClickedListener? = null
-    private var serviceInterface: ContactService.ServiceInterface? = null
     private var isContactPermissionGranted = true
     private var displayer: ContactPermissionDialog.PermissionDialogDisplayer? = null
+    private var contactListObserver = Observer<List<Contact>> {
+        view?.findViewById<TextView>(R.id.textViewName)?.text =
+            it[0].name
+        view?.findViewById<TextView>(R.id.textViewPhoneNumber)?.text =
+            it[0].phone
+    }
+    private var viewModel: ContactListViewModel? = null
     val requestPermissionLauncher = registerForActivityResult(ActivityResultContracts.RequestPermission()) {
             isGranted: Boolean ->
         if (isGranted) {
@@ -40,9 +48,6 @@ class ContactListFragment : Fragment() {
         if(context is OnContactClickedListener){
             onContactClicked = context
         }
-        if(context is ContactService.ServiceInterface){
-            serviceInterface = context
-        }
         if(context is ContactPermissionDialog.PermissionDialogDisplayer) {
             displayer = context
         }
@@ -51,9 +56,13 @@ class ContactListFragment : Fragment() {
     override fun onDetach() {
         super.onDetach()
         onContactClicked = null
-        serviceInterface = null
         displayer = null
         requestPermissionLauncher.unregister()
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        viewModel = ViewModelProvider(this).get(ContactListViewModel::class.java)
     }
 
     override fun onCreateView(
@@ -76,33 +85,19 @@ class ContactListFragment : Fragment() {
                 loadContacts()
             }
             shouldShowRequestPermissionRationale(Manifest.permission.READ_CONTACTS) -> {
-                displayer?.displayPermissionDialog(R.string.contactPermissionDialogList)
+                displayer?.displayPermissionDialog(R.string.contactPermissionDialogDetails)
             }
             else -> {
-                if(isContactPermissionGranted) {
-                    requestPermissionLauncher.launch(Manifest.permission.READ_CONTACTS)
-                }
+                requestPermissionLauncher.launch(Manifest.permission.READ_CONTACTS)
             }
         }
     }
 
-    fun loadContacts() = serviceInterface?.getService()?.getContactList(object: GetContactListListener{
-        override fun onSuccess(list: List<Contact>) {
-            requireActivity().runOnUiThread({
-                view?.findViewById<TextView>(R.id.textViewName)?.text =
-                    list[1].name
-                view?.findViewById<TextView>(R.id.textViewPhoneNumber)?.text =
-                    list[1].phone
-            })
-        }
-    })
+    private fun loadContacts() = viewModel?.getContactList(requireContext())
+        ?.observe(viewLifecycleOwner, contactListObserver)
 
     interface OnContactClickedListener {
         fun onContactClicked(id : String)
-    }
-
-    interface GetContactListListener {
-        fun onSuccess(list: List<Contact>)
     }
 
     companion object{
