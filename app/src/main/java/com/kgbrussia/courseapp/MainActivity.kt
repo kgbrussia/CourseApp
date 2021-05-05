@@ -35,6 +35,30 @@ class MainActivity : AppCompatActivity(),
         }
     }
 
+    override fun displayPermissionDialog(message: Int) {
+        if(contactPermissionDialog == null) {
+            contactPermissionDialog = ContactPermissionDialog.newInstance(message)
+        }
+        if(contactPermissionDialog?.isAdded == false) {
+            contactPermissionDialog?.show(supportFragmentManager, DIALOG_TAG)
+        }
+    }
+
+    override fun onContactClicked(id: String) {
+        supportFragmentManager
+            .beginTransaction()
+            .replace(R.id.fragment_container, ContactDetailsFragment.newInstance(id))
+            .addToBackStack(null)
+            .commit()
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        if(contactPermissionDialog?.isAdded == true) {
+            contactPermissionDialog?.dismissAllowingStateLoss()
+        }
+        super.onSaveInstanceState(outState)
+    }
+
     fun initStartFragment(){
         supportFragmentManager
             .beginTransaction()
@@ -48,6 +72,14 @@ class MainActivity : AppCompatActivity(),
             .commit()
     }
 
+    fun checkPermission() {
+        val weakReferenceFragment = WeakReference(supportFragmentManager.findFragmentByTag(FRAGMENT_TAG))
+        when (val fragment = weakReferenceFragment.get()) {
+            is ContactListFragment -> fragment.requestPermissionLauncher.launch(Manifest.permission.READ_CONTACTS)
+            is ContactDetailsFragment -> fragment.requestPermissionLauncher.launch(Manifest.permission.READ_CONTACTS)
+        }
+    }
+
     private fun startContactDetailsFromNotification(intent: Intent?) {
         val fragmentManager = supportFragmentManager
         if(fragmentManager.backStackEntryCount==1) {
@@ -57,43 +89,11 @@ class MainActivity : AppCompatActivity(),
         onContactClicked(id)
     }
 
-    override fun onContactClicked(id: String) {
-        supportFragmentManager
-            .beginTransaction()
-            .replace(R.id.fragment_container, ContactDetailsFragment.newInstance(id))
-            .addToBackStack(null)
-            .commit()
-    }
-
     private fun onContactClickedWithPop(id: String) {
         val fragmentManager = supportFragmentManager
         if(fragmentManager.backStackEntryCount==1) {
             fragmentManager.popBackStack()
         }
         onContactClicked(id)
-    }
-
-    override fun onSaveInstanceState(outState: Bundle) {
-        if(contactPermissionDialog?.isAdded == true) {
-            contactPermissionDialog?.dismissAllowingStateLoss()
-        }
-        super.onSaveInstanceState(outState)
-    }
-
-    override fun displayPermissionDialog(message: Int) {
-        if(contactPermissionDialog == null) {
-            contactPermissionDialog = ContactPermissionDialog.newInstance(message)
-        }
-        if(contactPermissionDialog?.isAdded == false) {
-            contactPermissionDialog?.show(supportFragmentManager, DIALOG_TAG)
-        }
-    }
-
-    fun checkPermission() {
-        val weakReferenceFragment = WeakReference(supportFragmentManager.findFragmentByTag(FRAGMENT_TAG))
-        when (val fragment = weakReferenceFragment.get()) {
-            is ContactListFragment -> fragment.requestPermissionLauncher.launch(Manifest.permission.READ_CONTACTS)
-            is ContactDetailsFragment -> fragment.requestPermissionLauncher.launch(Manifest.permission.READ_CONTACTS)
-        }
     }
 }

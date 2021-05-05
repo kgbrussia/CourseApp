@@ -66,15 +66,23 @@ class ContactDetailsFragment : Fragment() {
         }
     }
 
-    override fun onDetach() {
-        super.onDetach()
-        displayer = null
-        requestPermissionLauncher.unregister()
-    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         viewModel = ViewModelProvider(this).get(ContactDetailsViewModel::class.java)
+    }
+
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        return inflater.inflate(R.layout.fragment_contact_details, container, false)
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        buttonReminder = view.findViewById(R.id.button_birthday_reminder)
+        updateButtonState()
+        buttonReminder?.setOnClickListener { clickOnNotificationButton() }
     }
 
     override fun onStart() {
@@ -92,18 +100,15 @@ class ContactDetailsFragment : Fragment() {
         }
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        return inflater.inflate(R.layout.fragment_contact_details, container, false)
+    override fun onDestroyView() {
+        buttonReminder = null
+        super.onDestroyView()
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        buttonReminder = view.findViewById(R.id.button_birthday_reminder)
-        updateButtonState()
-        buttonReminder?.setOnClickListener { clickOnNotificationButton() }
+    override fun onDetach() {
+        super.onDetach()
+        displayer = null
+        requestPermissionLauncher.unregister()
     }
 
     private fun updateButtonState() {

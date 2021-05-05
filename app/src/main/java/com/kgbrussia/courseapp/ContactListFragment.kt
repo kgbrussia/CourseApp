@@ -53,13 +53,6 @@ class ContactListFragment : Fragment() {
         }
     }
 
-    override fun onDetach() {
-        super.onDetach()
-        onContactClicked = null
-        displayer = null
-        requestPermissionLauncher.unregister()
-    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         viewModel = ViewModelProvider(this).get(ContactListViewModel::class.java)
@@ -91,6 +84,13 @@ class ContactListFragment : Fragment() {
                 requestPermissionLauncher.launch(Manifest.permission.READ_CONTACTS)
             }
         }
+    }
+
+    override fun onDetach() {
+        super.onDetach()
+        onContactClicked = null
+        displayer = null
+        requestPermissionLauncher.unregister()
     }
 
     private fun loadContacts() = viewModel?.getContactList(requireContext())
