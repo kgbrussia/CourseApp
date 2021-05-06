@@ -6,26 +6,26 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import android.Manifest
 import android.content.pm.PackageManager
+import android.graphics.drawable.Drawable
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.widget.SearchView
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 
 class ContactListFragment : Fragment() {
 
-    private var onContactClicked: OnContactClickedListener? = null
+    private var recyclerView: RecyclerView? = null
+    private var adapter: ContactListAdapter? = null
+    private var itemClickListener: ItemClickListener? = null
     private var isContactPermissionGranted = true
     private var displayer: ContactPermissionDialog.PermissionDialogDisplayer? = null
-    private var contactListObserver = Observer<List<Contact>> {
-        view?.findViewById<TextView>(R.id.textViewName)?.text =
-            it[0].name
-        view?.findViewById<TextView>(R.id.textViewPhoneNumber)?.text =
-            it[0].phone
-    }
     private var viewModel: ContactListViewModel? = null
     val requestPermissionLauncher = registerForActivityResult(ActivityResultContracts.RequestPermission()) {
             isGranted: Boolean ->
@@ -45,8 +45,8 @@ class ContactListFragment : Fragment() {
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        if(context is OnContactClickedListener){
-            onContactClicked = context
+        if (context is ItemClickListener) {
+            itemClickListener = context
         }
         if(context is ContactPermissionDialog.PermissionDialogDisplayer) {
             displayer = context
@@ -67,7 +67,21 @@ class ContactListFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        view.findViewById<View>(R.id.contactCard).setOnClickListener {onContactClicked?.onContactClicked("123")}
+        initRecyclerView()
+        val searchView = view.findViewById(R.id.contact_list_search_view) as SearchView
+        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                return false
+            }
+
+            override fun onQueryTextChange(newText: String?): Boolean {
+                if(newText != null) {
+                    viewModel?.getContactList(requireContext(), newText)?.observe(viewLifecycleOwner,
+                        Observer { adapter?.submitList(it) })
+                }
+                return true
+            }
+        })
     }
 
     override fun onStart() {
@@ -86,19 +100,32 @@ class ContactListFragment : Fragment() {
         }
     }
 
+    override fun onDestroyView() {
+        adapter = null
+        recyclerView = null
+        super.onDestroyView()
+    }
+
     override fun onDetach() {
         super.onDetach()
-        onContactClicked = null
+        itemClickListener = null
         displayer = null
         requestPermissionLauncher.unregister()
     }
 
-    private fun loadContacts() = viewModel?.getContactList(requireContext())
-        ?.observe(viewLifecycleOwner, contactListObserver)
-
-    interface OnContactClickedListener {
-        fun onContactClicked(id : String)
+    private fun initRecyclerView() {
+        recyclerView = requireView().findViewById(R.id.contact_list_recycler_view)
+        recyclerView?.layoutManager = LinearLayoutManager(context)
+        val dividerItemDecoration = DividerItemDecoration(requireContext().applicationContext, RecyclerView.VERTICAL)
+        val dividerDrawable: Drawable? = ContextCompat.getDrawable(requireContext(),R.drawable.contact_divider_drawable)
+        if (dividerDrawable != null) dividerItemDecoration.setDrawable(dividerDrawable)
+        recyclerView?.addItemDecoration(dividerItemDecoration)
+        adapter = ContactListAdapter(itemClickListener)
+        recyclerView?.adapter = adapter
     }
+
+    private fun loadContacts() = viewModel?.getContactList(requireContext(), "")
+        ?.observe(viewLifecycleOwner, Observer { adapter?.submitList(it) })
 
     companion object{
         fun newInstance(): ContactListFragment = ContactListFragment()

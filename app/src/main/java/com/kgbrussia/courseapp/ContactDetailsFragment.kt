@@ -6,12 +6,14 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.core.os.bundleOf
@@ -35,9 +37,15 @@ class ContactDetailsFragment : Fragment() {
     private var viewModel: ContactDetailsViewModel? = null
     private var contactObserver = Observer<Contact> {
         currentContact = it
-        view?.findViewById<TextView>(R.id.textViewDescription)?.text =
-            "${currentContact?.id} ${currentContact?.name} ${currentContact?.phone}\nbirthday:" +
-                    " ${currentContact?.dayOfBirthday}.${currentContact?.monthOfBirthday}"
+        view?.findViewById<TextView>(R.id.textViewName)?.text = currentContact?.name
+        view?.findViewById<TextView>(R.id.textViewPhoneNumber)?.text = currentContact?.phone
+        val imageViewPhoto = view?.findViewById<ImageView>(R.id.imageViewPhoto)
+        val photoUri: Uri? = currentContact?.photo
+        if (photoUri != null) {
+            imageViewPhoto?.setImageURI(photoUri)
+        } else {
+            imageViewPhoto?.setImageResource(R.drawable.batman)
+        }
         if (currentContact?.dayOfBirthday != null && currentContact?.monthOfBirthday != null) {
             buttonReminder?.isEnabled = true
         }

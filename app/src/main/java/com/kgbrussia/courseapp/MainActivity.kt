@@ -10,7 +10,7 @@ private const val FRAGMENT_TAG = "FRAGMENT_TAG"
 const val DIALOG_TAG = "DIALOG_TAG"
 
 class MainActivity : AppCompatActivity(),
-    ContactListFragment.OnContactClickedListener,
+    ItemClickListener,
     ContactPermissionDialog.PermissionDialogDisplayer {
 
     private var contactPermissionDialog: ContactPermissionDialog? = null
@@ -44,7 +44,7 @@ class MainActivity : AppCompatActivity(),
         }
     }
 
-    override fun onContactClicked(id: String) {
+    override fun onItemClicked(id: String) {
         supportFragmentManager
             .beginTransaction()
             .replace(R.id.fragment_container, ContactDetailsFragment.newInstance(id))
@@ -86,7 +86,7 @@ class MainActivity : AppCompatActivity(),
             fragmentManager.popBackStack()
         }
         val id: String = requireNotNull(intent?.extras?.getString(ID_ARG))
-        onContactClicked(id)
+        onItemClicked(id)
     }
 
     private fun onContactClickedWithPop(id: String) {
@@ -94,6 +94,6 @@ class MainActivity : AppCompatActivity(),
         if(fragmentManager.backStackEntryCount==1) {
             fragmentManager.popBackStack()
         }
-        onContactClicked(id)
+        onItemClicked(id)
     }
 }

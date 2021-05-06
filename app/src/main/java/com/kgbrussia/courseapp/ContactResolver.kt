@@ -3,6 +3,7 @@ package com.kgbrussia.courseapp
 import android.content.ContentResolver
 import android.content.Context
 import android.database.Cursor
+import android.net.Uri
 import android.provider.ContactsContract.Contacts
 import android.provider.ContactsContract.CommonDataKinds
 import android.provider.ContactsContract.Data
@@ -10,16 +11,20 @@ import android.provider.ContactsContract.Data
 object ContactResolver {
     private const val DATA_CONTACT_ID = "${Data.CONTACT_ID}="
     private const val FIND_CONTACT_BY_ID_SELECTION = "${Contacts._ID} = ?"
+    private const val GET_DISPLAY_NAME_SELECTION = "${Contacts.DISPLAY_NAME} LIKE ?"
     private const val GET_LIST_PHONES_SELECTION = "${CommonDataKinds.Phone.CONTACT_ID} = ?"
-    private const val GET_BIRTHDAY_DATE_SELECTION = " AND ${Data.MIMETYPE}= '${CommonDataKinds.Event.CONTENT_ITEM_TYPE}' AND ${CommonDataKinds.Event.TYPE}=${CommonDataKinds.Event.TYPE_BIRTHDAY}"
+    private const val GET_BIRTHDAY_DATE_SELECTION = " AND ${Data.MIMETYPE}= '${CommonDataKinds.Event.CONTENT_ITEM_TYPE}'" +
+            " AND ${CommonDataKinds.Event.TYPE}=${CommonDataKinds.Event.TYPE_BIRTHDAY}"
+    private const val GET_PHOTO_URI_SELECTION = " AND ${Data.MIMETYPE}=" +
+            "'${CommonDataKinds.Photo.CONTENT_ITEM_TYPE}'"
 
-    fun getContactsList(context: Context): List<Contact> {
+    fun getContactsList(context: Context, name: String): List<Contact> {
         val contactsList = mutableListOf<Contact>()
         context.contentResolver.query(
             Contacts.CONTENT_URI,
             null,
-            null,
-            null,
+            GET_DISPLAY_NAME_SELECTION,
+            arrayOf("$name%"),
             null
         )?.use {
             while (it.moveToNext()) {
@@ -64,6 +69,25 @@ object ContactResolver {
         return phoneNumber
     }
 
+    private fun getPhotoUri(contentResolver: ContentResolver, id: String): Uri? {
+        var photoUri: Uri? = null
+        contentResolver.query(
+            Data.CONTENT_URI,
+            null,
+            DATA_CONTACT_ID + id + GET_PHOTO_URI_SELECTION,
+            null,
+            null
+        )?.use {
+            if (it.moveToFirst()) {
+                val uriString = it.getString(it.getColumnIndex(Contacts.Photo.PHOTO_URI))
+                if(uriString != null) {
+                    photoUri = Uri.parse(uriString)
+                }
+            }
+        }
+        return photoUri
+    }
+
     private fun getBirthdayDate(contentResolver: ContentResolver, id: String): String? {
         var birthday: String? = null
         contentResolver.query(
@@ -88,7 +112,8 @@ object ContactResolver {
             name = getString(getColumnIndex(Contacts.DISPLAY_NAME)) ?: "",
             phone = getPhoneNumber(contentResolver, id) ?: "",
             dayOfBirthday = null,
-            monthOfBirthday = null
+            monthOfBirthday = null,
+            photo = getPhotoUri(contentResolver, id)
         )
     }
 
@@ -105,7 +130,8 @@ object ContactResolver {
             name = getString(getColumnIndex(Contacts.DISPLAY_NAME)) ?: "",
             phone = getPhoneNumber(contentResolver, id) ?: "",
             dayOfBirthday = dayOfBirthday,
-            monthOfBirthday = monthOfBirthday
+            monthOfBirthday = monthOfBirthday,
+            photo = getPhotoUri(contentResolver, id)
         )
     }
 }
