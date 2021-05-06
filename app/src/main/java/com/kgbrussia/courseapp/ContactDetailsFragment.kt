@@ -6,9 +6,7 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.net.Uri
 import android.os.Bundle
-import android.provider.Settings
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -20,24 +18,35 @@ import androidx.core.os.bundleOf
 import java.util.*
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 
 const val ID_ARG = "CONTACT_ID"
 const val CONTACT_NAME = "CONTACT_NAME"
 const val CONTACT_PERMISSION = "CONTACT_PERMISSION"
 
-
 class ContactDetailsFragment : Fragment() {
 
-    private var serviceInterface: ContactService.ServiceInterface? = null
     private var displayer: ContactPermissionDialog.PermissionDialogDisplayer? = null
     private var currentContact: Contact? = null
     private var isNotificationsEnabled = false
     private var buttonReminder: Button? = null
-    private var contactId: Int = 123
+    private var contactId: Int = arguments?.getInt(ID_ARG) ?: 0
+    private var viewModel: ContactDetailsViewModel? = null
+    private var contactObserver = Observer<Contact> {
+        currentContact = it
+        view?.findViewById<TextView>(R.id.textViewDescription)?.text =
+            "${currentContact?.id} ${currentContact?.name} ${currentContact?.phone}\nbirthday:" +
+                    " ${currentContact?.dayOfBirthday}.${currentContact?.monthOfBirthday}"
+        if (currentContact?.dayOfBirthday != null && currentContact?.monthOfBirthday != null) {
+            buttonReminder?.isEnabled = true
+        }
+    }
+
     val requestPermissionLauncher = registerForActivityResult(ActivityResultContracts.RequestPermission()) {
             isGranted: Boolean ->
         if (isGranted) {
-            loadContactInfoById((requireArguments().getString(ID_ARG) ?: "123").toInt())
+            loadContactInfoById()
         } else {
             when {
                 shouldShowRequestPermissionRationale(Manifest.permission.READ_CONTACTS) -> {
@@ -52,34 +61,14 @@ class ContactDetailsFragment : Fragment() {
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        if(context is ContactService.ServiceInterface){
-            serviceInterface = context
-        }
         if(context is ContactPermissionDialog.PermissionDialogDisplayer) {
             displayer = context
         }
     }
 
-    override fun onDetach() {
-        super.onDetach()
-        serviceInterface = null
-        displayer = null
-        requestPermissionLauncher.unregister()
-    }
-
-    override fun onStart() {
-        super.onStart()
-        when {
-            ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.READ_CONTACTS) == PackageManager.PERMISSION_GRANTED -> {
-                loadContactInfoById((requireArguments().getString(ID_ARG) ?: "123").toInt())
-            }
-            shouldShowRequestPermissionRationale(Manifest.permission.READ_CONTACTS) -> {
-                displayer?.displayPermissionDialog(R.string.contactPermissionDialogDetails)
-            }
-            else -> {
-                requestPermissionLauncher.launch(Manifest.permission.READ_CONTACTS)
-            }
-        }
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        viewModel = ViewModelProvider(this).get(ContactDetailsViewModel::class.java)
     }
 
     override fun onCreateView(
@@ -94,6 +83,32 @@ class ContactDetailsFragment : Fragment() {
         buttonReminder = view.findViewById(R.id.button_birthday_reminder)
         updateButtonState()
         buttonReminder?.setOnClickListener { clickOnNotificationButton() }
+    }
+
+    override fun onStart() {
+        super.onStart()
+        when {
+            ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.READ_CONTACTS) == PackageManager.PERMISSION_GRANTED -> {
+                loadContactInfoById()
+            }
+            shouldShowRequestPermissionRationale(Manifest.permission.READ_CONTACTS) -> {
+                displayer?.displayPermissionDialog(R.string.contactPermissionDialogDetails)
+            }
+            else -> {
+                requestPermissionLauncher.launch(Manifest.permission.READ_CONTACTS)
+            }
+        }
+    }
+
+    override fun onDestroyView() {
+        buttonReminder = null
+        super.onDestroyView()
+    }
+
+    override fun onDetach() {
+        super.onDetach()
+        displayer = null
+        requestPermissionLauncher.unregister()
     }
 
     private fun updateButtonState() {
@@ -142,24 +157,8 @@ class ContactDetailsFragment : Fragment() {
         return birthdayCalendar
     }
 
-    fun loadContactInfoById(id : Int) = serviceInterface?.getService()?.getInfoById(object:
-        GetDetailsByIdListener {
-        override fun onSuccess(list: List<Contact>) {
-            list.forEach{
-                if (it.id == id){
-                    requireActivity().runOnUiThread({
-                        currentContact = it
-                        view?.findViewById<TextView>(R.id.textViewDescription)?.text =
-                            "${it.id} ${it.name} ${it.phone}\nbirthday: ${it.dayOfBirthday}.${it.monthOfBirthday}"
-                    })
-                }
-            }
-        }
-    })
-
-    interface GetDetailsByIdListener {
-        fun onSuccess(list: List<Contact>)
-    }
+    private fun loadContactInfoById() = viewModel?.getContactById(requireContext(), contactId.toString())
+        ?.observe(viewLifecycleOwner, contactObserver)
 
     companion object{
         fun newInstance(id: String) = ContactDetailsFragment().apply {
