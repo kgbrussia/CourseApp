@@ -130,9 +130,9 @@ class ContactListFragment : Fragment() {
             ContextCompat.getDrawable(requireContext(), R.drawable.contact_divider_drawable)
         if (dividerDrawable != null) dividerItemDecoration.setDrawable(dividerDrawable)
         recyclerView?.addItemDecoration(dividerItemDecoration)
-        adapter = ContactListAdapter({ id: String ->
+        adapter = ContactListAdapter { id: String ->
             itemClickListener?.onItemClicked(id)
-        })
+        }
         recyclerView?.adapter = adapter
     }
 

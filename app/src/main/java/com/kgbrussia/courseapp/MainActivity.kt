@@ -59,18 +59,18 @@ class MainActivity : AppCompatActivity(),
         super.onSaveInstanceState(outState)
     }
 
-    fun replaceStartFragment(isStartCheckPermission: Boolean) {
-        supportFragmentManager.beginTransaction()
-            .replace(R.id.fragment_container, ContactListFragment.newInstance(isStartCheckPermission), FRAGMENT_TAG)
-            .commit()
-    }
-
     fun checkPermission() {
         val weakReferenceFragment = WeakReference(supportFragmentManager.findFragmentByTag(FRAGMENT_TAG))
         when (val fragment = weakReferenceFragment.get()) {
             is ContactListFragment -> fragment.requestPermissionLauncher.launch(Manifest.permission.READ_CONTACTS)
             is ContactDetailsFragment -> fragment.requestPermissionLauncher.launch(Manifest.permission.READ_CONTACTS)
         }
+    }
+
+    private fun replaceStartFragment(isStartCheckPermission: Boolean) {
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.fragment_container, ContactListFragment.newInstance(isStartCheckPermission), FRAGMENT_TAG)
+            .commit()
     }
 
     private fun startContactDetailsFromNotification(intent: Intent?) {
