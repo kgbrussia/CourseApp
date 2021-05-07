@@ -6,7 +6,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 
 class ContactListViewModel : ViewModel() {
-    fun getContactList(context: Context) = ContactLoaderRepository.loadContactList(context)
+    fun getContactList(context: Context, name:String) = ContactLoaderRepository.loadContactList(context, name)
 }
 
 class ContactDetailsViewModel : ViewModel() {
@@ -17,12 +17,12 @@ object ContactLoaderRepository: ContactRepository {
     private lateinit var contactList: MutableLiveData<List<Contact>>
     private lateinit var contact: MutableLiveData<Contact>
 
-    override fun loadContactList(context: Context) : LiveData<List<Contact>> {
+    override fun loadContactList(context: Context, name: String) : LiveData<List<Contact>> {
         if(!::contactList.isInitialized) {
             contactList = MutableLiveData()
         }
         Thread {
-            contactList.postValue(ContactResolver.getContactsList(context))
+            contactList.postValue(ContactResolver.getContactsList(context, name))
         }.start()
         return contactList
     }
@@ -39,6 +39,6 @@ object ContactLoaderRepository: ContactRepository {
 }
 
 interface ContactRepository {
-    fun loadContactList(context: Context): LiveData<List<Contact>>
+    fun loadContactList(context: Context, name: String): LiveData<List<Contact>>
     fun loadContact(context: Context, id: String): LiveData<Contact>
 }

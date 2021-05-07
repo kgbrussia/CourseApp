@@ -6,12 +6,14 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.core.os.bundleOf
@@ -35,33 +37,32 @@ class ContactDetailsFragment : Fragment() {
     private var viewModel: ContactDetailsViewModel? = null
     private var contactObserver = Observer<Contact> {
         currentContact = it
-        view?.findViewById<TextView>(R.id.textViewDescription)?.text =
-            "${currentContact?.id} ${currentContact?.name} ${currentContact?.phone}\nbirthday:" +
-                    " ${currentContact?.dayOfBirthday}.${currentContact?.monthOfBirthday}"
-        if (currentContact?.dayOfBirthday != null && currentContact?.monthOfBirthday != null) {
-            buttonReminder?.isEnabled = true
-        }
+        displayScreenData()
     }
 
-    val requestPermissionLauncher = registerForActivityResult(ActivityResultContracts.RequestPermission()) {
-            isGranted: Boolean ->
-        if (isGranted) {
-            loadContactInfoById()
-        } else {
-            when {
-                shouldShowRequestPermissionRationale(Manifest.permission.READ_CONTACTS) -> {
-                    displayer?.displayPermissionDialog(R.string.contactPermissionDialogDetails)
-                }
-                else -> {
-                    Toast.makeText(context, getString(R.string.noAccessGranted), Toast.LENGTH_SHORT).show()
+    val requestPermissionLauncher =
+        registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted: Boolean ->
+            if (isGranted) {
+                loadContactInfoById()
+            } else {
+                when {
+                    shouldShowRequestPermissionRationale(Manifest.permission.READ_CONTACTS) -> {
+                        displayer?.displayPermissionDialog(R.string.contactPermissionDialogDetails)
+                    }
+                    else -> {
+                        Toast.makeText(
+                            context,
+                            getString(R.string.noAccessGranted),
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
                 }
             }
         }
-    }
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        if(context is ContactPermissionDialog.PermissionDialogDisplayer) {
+        if (context is ContactPermissionDialog.PermissionDialogDisplayer) {
             displayer = context
         }
     }
@@ -88,7 +89,10 @@ class ContactDetailsFragment : Fragment() {
     override fun onStart() {
         super.onStart()
         when {
-            ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.READ_CONTACTS) == PackageManager.PERMISSION_GRANTED -> {
+            ContextCompat.checkSelfPermission(
+                requireContext(),
+                Manifest.permission.READ_CONTACTS
+            ) == PackageManager.PERMISSION_GRANTED -> {
                 loadContactInfoById()
             }
             shouldShowRequestPermissionRationale(Manifest.permission.READ_CONTACTS) -> {
@@ -112,9 +116,11 @@ class ContactDetailsFragment : Fragment() {
     }
 
     private fun updateButtonState() {
-        isNotificationsEnabled = PendingIntent.getBroadcast(context, contactId,
-            Intent(activity, ContactBroadcastReceiver::class.java), PendingIntent.FLAG_NO_CREATE) != null
-        if(isNotificationsEnabled) {
+        isNotificationsEnabled = PendingIntent.getBroadcast(
+            context, contactId,
+            Intent(activity, ContactBroadcastReceiver::class.java), PendingIntent.FLAG_NO_CREATE
+        ) != null
+        if (isNotificationsEnabled) {
             buttonReminder?.text = getString(R.string.turn_off_notifications)
         } else {
             buttonReminder?.text = getString(R.string.turn_on_notifications)
@@ -124,7 +130,7 @@ class ContactDetailsFragment : Fragment() {
     private fun clickOnNotificationButton() {
         val pendingIntent = createPendingIntent()
         val alarmManager = context?.getSystemService(Context.ALARM_SERVICE) as? AlarmManager
-        if(isNotificationsEnabled) {
+        if (isNotificationsEnabled) {
             buttonReminder?.text = getString(R.string.turn_on_notifications)
             isNotificationsEnabled = false
             alarmManager?.cancel(pendingIntent)
@@ -132,7 +138,11 @@ class ContactDetailsFragment : Fragment() {
         } else {
             buttonReminder?.text = getString(R.string.turn_off_notifications)
             isNotificationsEnabled = true
-            alarmManager?.set(AlarmManager.RTC_WAKEUP, nextCalendarBirthday().timeInMillis, pendingIntent)
+            alarmManager?.set(
+                AlarmManager.RTC_WAKEUP,
+                nextCalendarBirthday().timeInMillis,
+                pendingIntent
+            )
         }
     }
 
@@ -151,16 +161,36 @@ class ContactDetailsFragment : Fragment() {
         birthdayCalendar.set(Calendar.HOUR_OF_DAY, 14)
         birthdayCalendar.set(Calendar.MINUTE, 40)
         birthdayCalendar.set(Calendar.SECOND, 20)
-        if(birthdayCalendar.before(currentCalendar)) {
+        if (birthdayCalendar.before(currentCalendar)) {
             birthdayCalendar.add(Calendar.YEAR, 1)
         }
         return birthdayCalendar
     }
 
-    private fun loadContactInfoById() = viewModel?.getContactById(requireContext(), contactId.toString())
-        ?.observe(viewLifecycleOwner, contactObserver)
+    private fun loadContactInfoById() =
+        viewModel?.getContactById(requireContext(), contactId.toString())
+            ?.observe(viewLifecycleOwner, contactObserver)
 
-    companion object{
+    private fun displayScreenData() {
+        currentContact?.let { contact ->
+            requireView().findViewById<TextView>(R.id.textViewName).text = contact.name
+            requireView().findViewById<TextView>(R.id.textViewPhoneNumber).text = contact.phone
+
+            val imageViewPhoto = requireView().findViewById<ImageView>(R.id.imageViewPhoto)
+            val photoUri: Uri? = contact.photo
+            if (photoUri != null) {
+                imageViewPhoto?.setImageURI(photoUri)
+            } else {
+                imageViewPhoto?.setImageResource(R.drawable.batman)
+            }
+
+            if (contact.dayOfBirthday != null && contact.monthOfBirthday != null) {
+                buttonReminder?.isEnabled = true
+            }
+        }
+    }
+
+    companion object {
         fun newInstance(id: String) = ContactDetailsFragment().apply {
             arguments = bundleOf(ID_ARG to id)
         }

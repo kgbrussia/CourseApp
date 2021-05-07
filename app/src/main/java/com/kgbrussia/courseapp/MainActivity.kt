@@ -10,7 +10,7 @@ private const val FRAGMENT_TAG = "FRAGMENT_TAG"
 const val DIALOG_TAG = "DIALOG_TAG"
 
 class MainActivity : AppCompatActivity(),
-    ContactListFragment.OnContactClickedListener,
+    ItemClickListener,
     ContactPermissionDialog.PermissionDialogDisplayer {
 
     private var contactPermissionDialog: ContactPermissionDialog? = null
@@ -19,13 +19,13 @@ class MainActivity : AppCompatActivity(),
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         val startedFromNotification: Boolean = intent.extras?.containsKey(ID_ARG) ?: false
+        val isStartCheckPermission: Boolean = intent.extras?.getBoolean(CONTACT_PERMISSION) ?: true
         if(savedInstanceState == null){
-            initStartFragment()
+            replaceStartFragment(isStartCheckPermission)
             if(startedFromNotification)
                 startContactDetailsFromNotification(intent)
         }
 
-        val isStartCheckPermission: Boolean = intent.extras?.getBoolean(CONTACT_PERMISSION) ?: true
         if(!isStartCheckPermission && savedInstanceState == null) {
             replaceStartFragment(isStartCheckPermission)
             val id = requireNotNull(intent?.extras?.getString(ID_ARG))
@@ -44,7 +44,7 @@ class MainActivity : AppCompatActivity(),
         }
     }
 
-    override fun onContactClicked(id: String) {
+    override fun onItemClicked(id: String) {
         supportFragmentManager
             .beginTransaction()
             .replace(R.id.fragment_container, ContactDetailsFragment.newInstance(id))
@@ -59,19 +59,6 @@ class MainActivity : AppCompatActivity(),
         super.onSaveInstanceState(outState)
     }
 
-    fun initStartFragment(){
-        supportFragmentManager
-            .beginTransaction()
-            .replace(R.id.fragment_container, ContactListFragment.newInstance())
-            .commit()
-    }
-
-    fun replaceStartFragment(isStartCheckPermission: Boolean) {
-        supportFragmentManager.beginTransaction()
-            .replace(R.id.fragment_container, ContactListFragment.newInstance(isStartCheckPermission), FRAGMENT_TAG)
-            .commit()
-    }
-
     fun checkPermission() {
         val weakReferenceFragment = WeakReference(supportFragmentManager.findFragmentByTag(FRAGMENT_TAG))
         when (val fragment = weakReferenceFragment.get()) {
@@ -80,13 +67,19 @@ class MainActivity : AppCompatActivity(),
         }
     }
 
+    private fun replaceStartFragment(isStartCheckPermission: Boolean) {
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.fragment_container, ContactListFragment.newInstance(isStartCheckPermission), FRAGMENT_TAG)
+            .commit()
+    }
+
     private fun startContactDetailsFromNotification(intent: Intent?) {
         val fragmentManager = supportFragmentManager
         if(fragmentManager.backStackEntryCount==1) {
             fragmentManager.popBackStack()
         }
         val id: String = requireNotNull(intent?.extras?.getString(ID_ARG))
-        onContactClicked(id)
+        onItemClicked(id)
     }
 
     private fun onContactClickedWithPop(id: String) {
@@ -94,6 +87,6 @@ class MainActivity : AppCompatActivity(),
         if(fragmentManager.backStackEntryCount==1) {
             fragmentManager.popBackStack()
         }
-        onContactClicked(id)
+        onItemClicked(id)
     }
 }

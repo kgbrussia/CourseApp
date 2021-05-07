@@ -3,12 +3,7 @@
 
     <!-- Contact List Screen -->
     <string name="contact_list_title">Список контактов</string>
-    <string name="contact_list_c1_name">Bruce Wayne</string>
-    <string name="contact_list_c2_name">Ekchart Tolle</string>
-    <string name="contact_list_c3_name">Madara Uchiha</string>
-    <string name="contact_list_c1_phone1">+79123453489</string>
-    <string name="contact_list_c2_phone1">+79123000789</string>
-    <string name="contact_list_c3_phone1">+79236656789</string>
+    <string name="search_query_hint">Найти контакт</string>
 
     <!-- Contact Details Screen -->
     <string name="contact_details_title">Детали контакта</string>
