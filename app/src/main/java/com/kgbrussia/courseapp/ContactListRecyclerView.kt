@@ -10,57 +10,57 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 
-class ContactListAdapter(private val itemClickListener: ItemClickListener?) :
-    ListAdapter<Contact, ContactViewHolder>(DiffUtilCallback) {
+class ContactListAdapter(
+    private val onItemClicked: (String) -> Unit
+) : ListAdapter<Contact, ContactViewHolder>(ContactListDiffUtilCallback) {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ContactViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_contact_card, parent, false)
-        return ContactViewHolder(view)
+        val view =
+            LayoutInflater.from(parent.context).inflate(R.layout.item_contact_card, parent, false)
+        return ContactViewHolder(view, onItemClicked)
     }
 
     override fun onBindViewHolder(holder: ContactViewHolder, position: Int) {
         holder.bind(getItem(position))
-        holder.itemView.setOnClickListener {
-            val adapterPosition = holder.adapterPosition
-            if(adapterPosition != RecyclerView.NO_POSITION) {
-                itemClickListener?.onItemClicked(getItem(adapterPosition).id.toString())
-            }
-        }
     }
 }
 
-class ContactViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+class ContactViewHolder(
+    view: View,
+    private val onItemClicked: (String) -> Unit
+) : RecyclerView.ViewHolder(view) {
     private var contactImage: ImageView = view.findViewById(R.id.imageViewPhoto)
     private var contactName: TextView = view.findViewById(R.id.textViewName)
     private var contactNumber: TextView = view.findViewById(R.id.textViewPhoneNumber)
 
     fun bind(contact: Contact) {
         contactName.text = contact.name
-        contactNumber.text = if (contact.phone.isNotEmpty()) contact.phone else ""
+        contactNumber.text = contact.phone.ifEmpty { "unknown" }
         val photoUri: Uri? = contact.photo
-        if (photoUri != null) contactImage.setImageURI(photoUri)
-        else contactImage.setImageResource(R.drawable.batman)
+        if (photoUri != null) {
+            contactImage.setImageURI(photoUri)
+        } else {
+            contactImage.setImageResource(R.drawable.batman)
+        }
+        itemView.setOnClickListener {
+            if (adapterPosition != RecyclerView.NO_POSITION){
+                onItemClicked(contact.id.toString())
+            }
+        }
     }
 }
 
-object DiffUtilCallback : DiffUtil.ItemCallback<Contact>() {
+object ContactListDiffUtilCallback : DiffUtil.ItemCallback<Contact>() {
     override fun areItemsTheSame(oldItem: Contact, newItem: Contact): Boolean {
         return oldItem.id == newItem.id
     }
 
     override fun areContentsTheSame(oldItem: Contact, newItem: Contact): Boolean {
-        val contentsTheSame: Boolean
-        if(oldItem.phone.isNotEmpty() && newItem.phone.isNotEmpty()){
-            contentsTheSame = oldItem.name == newItem.name &&
+        return if (oldItem.phone.isNotEmpty() && newItem.phone.isNotEmpty()) {
+            oldItem.name == newItem.name &&
                     oldItem.phone == newItem.phone &&
                     oldItem.photo == newItem.photo
-        }else{
-            contentsTheSame = oldItem.name == newItem.name &&
-                    oldItem.photo == newItem.photo
+        } else {
+            oldItem.name == newItem.name && oldItem.photo == newItem.photo
         }
-        return contentsTheSame
     }
-}
-
-interface ItemClickListener {
-    fun onItemClicked(id: String)
 }

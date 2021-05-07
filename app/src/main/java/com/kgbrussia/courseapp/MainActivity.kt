@@ -19,13 +19,13 @@ class MainActivity : AppCompatActivity(),
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         val startedFromNotification: Boolean = intent.extras?.containsKey(ID_ARG) ?: false
+        val isStartCheckPermission: Boolean = intent.extras?.getBoolean(CONTACT_PERMISSION) ?: true
         if(savedInstanceState == null){
-            initStartFragment()
+            replaceStartFragment(isStartCheckPermission)
             if(startedFromNotification)
                 startContactDetailsFromNotification(intent)
         }
 
-        val isStartCheckPermission: Boolean = intent.extras?.getBoolean(CONTACT_PERMISSION) ?: true
         if(!isStartCheckPermission && savedInstanceState == null) {
             replaceStartFragment(isStartCheckPermission)
             val id = requireNotNull(intent?.extras?.getString(ID_ARG))
@@ -57,13 +57,6 @@ class MainActivity : AppCompatActivity(),
             contactPermissionDialog?.dismissAllowingStateLoss()
         }
         super.onSaveInstanceState(outState)
-    }
-
-    fun initStartFragment(){
-        supportFragmentManager
-            .beginTransaction()
-            .replace(R.id.fragment_container, ContactListFragment.newInstance())
-            .commit()
     }
 
     fun replaceStartFragment(isStartCheckPermission: Boolean) {

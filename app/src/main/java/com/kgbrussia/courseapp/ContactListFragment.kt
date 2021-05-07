@@ -27,28 +27,32 @@ class ContactListFragment : Fragment() {
     private var isContactPermissionGranted = true
     private var displayer: ContactPermissionDialog.PermissionDialogDisplayer? = null
     private var viewModel: ContactListViewModel? = null
-    val requestPermissionLauncher = registerForActivityResult(ActivityResultContracts.RequestPermission()) {
-            isGranted: Boolean ->
-        if (isGranted) {
-            loadContacts()
-        } else {
-            when {
-                shouldShowRequestPermissionRationale(Manifest.permission.READ_CONTACTS) -> {
-                    displayer?.displayPermissionDialog(R.string.contactPermissionDialogList)
-                }
-                else -> {
-                    Toast.makeText(context, getString(R.string.noAccessGranted), Toast.LENGTH_SHORT).show()
+    val requestPermissionLauncher =
+        registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted: Boolean ->
+            if (isGranted) {
+                loadContacts()
+            } else {
+                when {
+                    shouldShowRequestPermissionRationale(Manifest.permission.READ_CONTACTS) -> {
+                        displayer?.displayPermissionDialog(R.string.contactPermissionDialogList)
+                    }
+                    else -> {
+                        Toast.makeText(
+                            context,
+                            getString(R.string.noAccessGranted),
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
                 }
             }
         }
-    }
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
         if (context is ItemClickListener) {
             itemClickListener = context
         }
-        if(context is ContactPermissionDialog.PermissionDialogDisplayer) {
+        if (context is ContactPermissionDialog.PermissionDialogDisplayer) {
             displayer = context
         }
     }
@@ -68,16 +72,17 @@ class ContactListFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initRecyclerView()
-        val searchView = view.findViewById(R.id.contact_list_search_view) as SearchView
+        val searchView = view.findViewById<SearchView>(R.id.contact_list_search_view)
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
                 return false
             }
 
             override fun onQueryTextChange(newText: String?): Boolean {
-                if(newText != null) {
-                    viewModel?.getContactList(requireContext(), newText)?.observe(viewLifecycleOwner,
-                        Observer { adapter?.submitList(it) })
+                if (newText != null) {
+                    viewModel?.getContactList(requireContext(), newText)
+                        ?.observe(viewLifecycleOwner,
+                            Observer { adapter?.submitList(it) })
                 }
                 return true
             }
@@ -88,7 +93,10 @@ class ContactListFragment : Fragment() {
         super.onStart()
         isContactPermissionGranted = arguments?.getBoolean(CONTACT_PERMISSION) ?: true
         when {
-            ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.READ_CONTACTS) == PackageManager.PERMISSION_GRANTED -> {
+            ContextCompat.checkSelfPermission(
+                requireContext(),
+                Manifest.permission.READ_CONTACTS
+            ) == PackageManager.PERMISSION_GRANTED -> {
                 loadContacts()
             }
             shouldShowRequestPermissionRationale(Manifest.permission.READ_CONTACTS) -> {
@@ -116,20 +124,22 @@ class ContactListFragment : Fragment() {
     private fun initRecyclerView() {
         recyclerView = requireView().findViewById(R.id.contact_list_recycler_view)
         recyclerView?.layoutManager = LinearLayoutManager(context)
-        val dividerItemDecoration = DividerItemDecoration(requireContext().applicationContext, RecyclerView.VERTICAL)
-        val dividerDrawable: Drawable? = ContextCompat.getDrawable(requireContext(),R.drawable.contact_divider_drawable)
+        val dividerItemDecoration =
+            DividerItemDecoration(requireContext().applicationContext, RecyclerView.VERTICAL)
+        val dividerDrawable: Drawable? =
+            ContextCompat.getDrawable(requireContext(), R.drawable.contact_divider_drawable)
         if (dividerDrawable != null) dividerItemDecoration.setDrawable(dividerDrawable)
         recyclerView?.addItemDecoration(dividerItemDecoration)
-        adapter = ContactListAdapter(itemClickListener)
+        adapter = ContactListAdapter({ id: String ->
+            itemClickListener?.onItemClicked(id)
+        })
         recyclerView?.adapter = adapter
     }
 
     private fun loadContacts() = viewModel?.getContactList(requireContext(), "")
         ?.observe(viewLifecycleOwner, Observer { adapter?.submitList(it) })
 
-    companion object{
-        fun newInstance(): ContactListFragment = ContactListFragment()
-
+    companion object {
         fun newInstance(isContactPermissionGranted: Boolean): ContactListFragment {
             val args = Bundle()
             args.putBoolean(CONTACT_PERMISSION, isContactPermissionGranted)
@@ -138,4 +148,8 @@ class ContactListFragment : Fragment() {
             return fragment
         }
     }
+}
+
+interface ItemClickListener {
+    fun onItemClicked(id: String)
 }
