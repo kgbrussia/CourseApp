@@ -18,6 +18,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import io.reactivex.rxjava3.subjects.PublishSubject
 
 class ContactListFragment : Fragment() {
 
@@ -72,21 +73,8 @@ class ContactListFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initRecyclerView()
-        val searchView = view.findViewById<SearchView>(R.id.contact_list_search_view)
-        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
-            override fun onQueryTextSubmit(query: String?): Boolean {
-                return false
-            }
-
-            override fun onQueryTextChange(newText: String?): Boolean {
-                if (newText != null) {
-                    viewModel?.getContactList(requireContext(), newText)
-                        ?.observe(viewLifecycleOwner,
-                            Observer { adapter?.submitList(it) })
-                }
-                return true
-            }
-        })
+        viewModel?.contacts?.observe(viewLifecycleOwner, Observer { adapter?.submitList(it) })
+        initSearchView()
     }
 
     override fun onStart() {
@@ -136,8 +124,25 @@ class ContactListFragment : Fragment() {
         recyclerView?.adapter = adapter
     }
 
-    private fun loadContacts() = viewModel?.getContactList(requireContext(), "")
-        ?.observe(viewLifecycleOwner, Observer { adapter?.submitList(it) })
+    private fun initSearchView() {
+        val searchView = requireView().findViewById<SearchView>(R.id.contact_list_search_view)
+        val publishSubject: PublishSubject<String> = PublishSubject.create()
+        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                return false
+            }
+
+            override fun onQueryTextChange(newText: String?): Boolean {
+                if (newText != null) {
+                    publishSubject.onNext(newText)
+                }
+                return false
+            }
+        })
+        viewModel?.getFilteredContactList(requireContext(), publishSubject)
+    }
+
+    private fun loadContacts() = viewModel?.getContactList(requireContext())
 
     companion object {
         fun newInstance(isContactPermissionGranted: Boolean): ContactListFragment {

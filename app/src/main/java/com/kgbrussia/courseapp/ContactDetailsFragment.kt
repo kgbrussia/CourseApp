@@ -84,6 +84,7 @@ class ContactDetailsFragment : Fragment() {
         buttonReminder = view.findViewById(R.id.button_birthday_reminder)
         updateButtonState()
         buttonReminder?.setOnClickListener { clickOnNotificationButton() }
+        viewModel?.contact?.observe(viewLifecycleOwner, contactObserver)
     }
 
     override fun onStart() {
@@ -169,7 +170,6 @@ class ContactDetailsFragment : Fragment() {
 
     private fun loadContactInfoById() =
         viewModel?.getContactById(requireContext(), contactId.toString())
-            ?.observe(viewLifecycleOwner, contactObserver)
 
     private fun displayScreenData() {
         currentContact?.let { contact ->
