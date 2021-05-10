@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import android.Manifest
 import android.content.pm.PackageManager
 import android.graphics.drawable.Drawable
+import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.widget.SearchView
@@ -23,6 +24,7 @@ import io.reactivex.rxjava3.subjects.PublishSubject
 class ContactListFragment : Fragment() {
 
     private var recyclerView: RecyclerView? = null
+    private var progressBar: ProgressBar? = null
     private var adapter: ContactListAdapter? = null
     private var itemClickListener: ItemClickListener? = null
     private var isContactPermissionGranted = true
@@ -72,8 +74,9 @@ class ContactListFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        initProgressBar()
         initRecyclerView()
-        viewModel?.contacts?.observe(viewLifecycleOwner, Observer { adapter?.submitList(it) })
+        initViewModel()
         initSearchView()
     }
 
@@ -99,6 +102,7 @@ class ContactListFragment : Fragment() {
     override fun onDestroyView() {
         adapter = null
         recyclerView = null
+        progressBar = null
         super.onDestroyView()
     }
 
@@ -109,6 +113,19 @@ class ContactListFragment : Fragment() {
         requestPermissionLauncher.unregister()
     }
 
+    private fun initProgressBar() {
+        progressBar = requireView().findViewById(R.id.progress_bar_contact_list)
+        viewModel?.isLoadingIndicatorVisible?.observe(viewLifecycleOwner, Observer { isLoadingIndicatorVisible ->
+            when(isLoadingIndicatorVisible) {
+                true -> progressBar?.visibility = View.VISIBLE
+                false -> progressBar?.visibility = View.GONE
+            }
+        })
+    }
+
+    private fun initViewModel(){
+        viewModel?.contacts?.observe(viewLifecycleOwner, Observer { adapter?.submitList(it) })
+    }
     private fun initRecyclerView() {
         recyclerView = requireView().findViewById(R.id.contact_list_recycler_view)
         recyclerView?.layoutManager = LinearLayoutManager(context)
@@ -139,10 +156,10 @@ class ContactListFragment : Fragment() {
                 return false
             }
         })
-        viewModel?.getFilteredContactList(requireContext(), publishSubject)
+        viewModel?.searchQueryEntered(requireContext(), publishSubject)
     }
 
-    private fun loadContacts() = viewModel?.getContactList(requireContext())
+    private fun loadContacts() = viewModel?.contactListLoaded(requireContext())
 
     companion object {
         fun newInstance(isContactPermissionGranted: Boolean): ContactListFragment {
