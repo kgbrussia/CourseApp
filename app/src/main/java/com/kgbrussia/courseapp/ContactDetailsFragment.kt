@@ -17,6 +17,7 @@ import androidx.core.os.bundleOf
 import java.util.*
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
+import androidx.core.view.isVisible
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 
@@ -86,6 +87,22 @@ class ContactDetailsFragment : Fragment() {
 
     override fun onStart() {
         super.onStart()
+        checkPermission()
+    }
+
+    override fun onDestroyView() {
+        buttonReminder = null
+        progressBar = null
+        super.onDestroyView()
+    }
+
+    override fun onDetach() {
+        super.onDetach()
+        displayer = null
+        requestPermissionLauncher.unregister()
+    }
+
+    private fun checkPermission() {
         when {
             ContextCompat.checkSelfPermission(
                 requireContext(),
@@ -101,26 +118,10 @@ class ContactDetailsFragment : Fragment() {
             }
         }
     }
-
-    override fun onDestroyView() {
-        buttonReminder = null
-        progressBar = null
-        super.onDestroyView()
-    }
-
-    override fun onDetach() {
-        super.onDetach()
-        displayer = null
-        requestPermissionLauncher.unregister()
-    }
-
     private fun initProgressBar() {
         progressBar = requireView().findViewById(R.id.progress_bar_details)
         viewModel?.isLoadingIndicatorVisible?.observe(viewLifecycleOwner, Observer { isLoadingIndicatorVisible ->
-            when(isLoadingIndicatorVisible) {
-                true -> progressBar?.visibility = View.VISIBLE
-                false -> progressBar?.visibility = View.GONE
-            }
+            progressBar?.isVisible = isLoadingIndicatorVisible
         })
     }
 

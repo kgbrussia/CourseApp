@@ -14,6 +14,7 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.widget.SearchView
 import androidx.core.content.ContextCompat
+import androidx.core.view.isVisible
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DividerItemDecoration
@@ -116,10 +117,7 @@ class ContactListFragment : Fragment() {
     private fun initProgressBar() {
         progressBar = requireView().findViewById(R.id.progress_bar_contact_list)
         viewModel?.isLoadingIndicatorVisible?.observe(viewLifecycleOwner, Observer { isLoadingIndicatorVisible ->
-            when(isLoadingIndicatorVisible) {
-                true -> progressBar?.visibility = View.VISIBLE
-                false -> progressBar?.visibility = View.GONE
-            }
+            progressBar?.isVisible = isLoadingIndicatorVisible
         })
     }
 
