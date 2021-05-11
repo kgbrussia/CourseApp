@@ -12,14 +12,12 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.ImageView
-import android.widget.TextView
-import android.widget.Toast
+import android.widget.*
 import androidx.core.os.bundleOf
 import java.util.*
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
+import androidx.core.view.isVisible
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 
@@ -33,6 +31,7 @@ class ContactDetailsFragment : Fragment() {
     private var currentContact: Contact? = null
     private var isNotificationsEnabled = false
     private var buttonReminder: Button? = null
+    private var progressBar: ProgressBar? = null
     private var contactId: Int = arguments?.getInt(ID_ARG) ?: 0
     private var viewModel: ContactDetailsViewModel? = null
     private var contactObserver = Observer<Contact> {
@@ -81,13 +80,29 @@ class ContactDetailsFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        buttonReminder = view.findViewById(R.id.button_birthday_reminder)
-        updateButtonState()
-        buttonReminder?.setOnClickListener { clickOnNotificationButton() }
+        initReminderButton()
+        initProgressBar()
+        initViewModel()
     }
 
     override fun onStart() {
         super.onStart()
+        checkPermission()
+    }
+
+    override fun onDestroyView() {
+        buttonReminder = null
+        progressBar = null
+        super.onDestroyView()
+    }
+
+    override fun onDetach() {
+        super.onDetach()
+        displayer = null
+        requestPermissionLauncher.unregister()
+    }
+
+    private fun checkPermission() {
         when {
             ContextCompat.checkSelfPermission(
                 requireContext(),
@@ -103,16 +118,21 @@ class ContactDetailsFragment : Fragment() {
             }
         }
     }
-
-    override fun onDestroyView() {
-        buttonReminder = null
-        super.onDestroyView()
+    private fun initProgressBar() {
+        progressBar = requireView().findViewById(R.id.progress_bar_details)
+        viewModel?.isLoadingIndicatorVisible?.observe(viewLifecycleOwner, Observer { isLoadingIndicatorVisible ->
+            progressBar?.isVisible = isLoadingIndicatorVisible
+        })
     }
 
-    override fun onDetach() {
-        super.onDetach()
-        displayer = null
-        requestPermissionLauncher.unregister()
+    private fun initViewModel(){
+        viewModel?.contact?.observe(viewLifecycleOwner, contactObserver)
+    }
+
+    private fun initReminderButton(){
+        buttonReminder = requireView().findViewById(R.id.button_birthday_reminder)
+        updateButtonState()
+        buttonReminder?.setOnClickListener { clickOnNotificationButton() }
     }
 
     private fun updateButtonState() {
@@ -168,8 +188,7 @@ class ContactDetailsFragment : Fragment() {
     }
 
     private fun loadContactInfoById() =
-        viewModel?.getContactById(requireContext(), contactId.toString())
-            ?.observe(viewLifecycleOwner, contactObserver)
+        viewModel?.contactByIdLoaded(requireContext(), contactId.toString())
 
     private fun displayScreenData() {
         currentContact?.let { contact ->

@@ -9,19 +9,23 @@ import android.view.ViewGroup
 import android.Manifest
 import android.content.pm.PackageManager
 import android.graphics.drawable.Drawable
+import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.widget.SearchView
 import androidx.core.content.ContextCompat
+import androidx.core.view.isVisible
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import io.reactivex.rxjava3.subjects.PublishSubject
 
 class ContactListFragment : Fragment() {
 
     private var recyclerView: RecyclerView? = null
+    private var progressBar: ProgressBar? = null
     private var adapter: ContactListAdapter? = null
     private var itemClickListener: ItemClickListener? = null
     private var isContactPermissionGranted = true
@@ -71,22 +75,10 @@ class ContactListFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        initProgressBar()
         initRecyclerView()
-        val searchView = view.findViewById<SearchView>(R.id.contact_list_search_view)
-        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
-            override fun onQueryTextSubmit(query: String?): Boolean {
-                return false
-            }
-
-            override fun onQueryTextChange(newText: String?): Boolean {
-                if (newText != null) {
-                    viewModel?.getContactList(requireContext(), newText)
-                        ?.observe(viewLifecycleOwner,
-                            Observer { adapter?.submitList(it) })
-                }
-                return true
-            }
-        })
+        initViewModel()
+        initSearchView()
     }
 
     override fun onStart() {
@@ -111,6 +103,7 @@ class ContactListFragment : Fragment() {
     override fun onDestroyView() {
         adapter = null
         recyclerView = null
+        progressBar = null
         super.onDestroyView()
     }
 
@@ -121,6 +114,16 @@ class ContactListFragment : Fragment() {
         requestPermissionLauncher.unregister()
     }
 
+    private fun initProgressBar() {
+        progressBar = requireView().findViewById(R.id.progress_bar_contact_list)
+        viewModel?.isLoadingIndicatorVisible?.observe(viewLifecycleOwner, Observer { isLoadingIndicatorVisible ->
+            progressBar?.isVisible = isLoadingIndicatorVisible
+        })
+    }
+
+    private fun initViewModel(){
+        viewModel?.contacts?.observe(viewLifecycleOwner, Observer { adapter?.submitList(it) })
+    }
     private fun initRecyclerView() {
         recyclerView = requireView().findViewById(R.id.contact_list_recycler_view)
         recyclerView?.layoutManager = LinearLayoutManager(context)
@@ -136,8 +139,25 @@ class ContactListFragment : Fragment() {
         recyclerView?.adapter = adapter
     }
 
-    private fun loadContacts() = viewModel?.getContactList(requireContext(), "")
-        ?.observe(viewLifecycleOwner, Observer { adapter?.submitList(it) })
+    private fun initSearchView() {
+        val searchView = requireView().findViewById<SearchView>(R.id.contact_list_search_view)
+        val publishSubject: PublishSubject<String> = PublishSubject.create()
+        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                return false
+            }
+
+            override fun onQueryTextChange(newText: String?): Boolean {
+                if (newText != null) {
+                    publishSubject.onNext(newText)
+                }
+                return false
+            }
+        })
+        viewModel?.searchQueryEntered(requireContext(), publishSubject)
+    }
+
+    private fun loadContacts() = viewModel?.contactListLoaded(requireContext())
 
     companion object {
         fun newInstance(isContactPermissionGranted: Boolean): ContactListFragment {
