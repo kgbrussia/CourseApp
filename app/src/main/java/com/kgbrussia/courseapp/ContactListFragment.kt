@@ -1,36 +1,40 @@
 package com.kgbrussia.courseapp
 
+import android.Manifest
 import android.content.Context
+import android.content.pm.PackageManager
+import android.graphics.drawable.Drawable
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.Manifest
-import android.content.pm.PackageManager
-import android.graphics.drawable.Drawable
 import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.widget.SearchView
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.kgbrussia.courseapp.viewmodel.ContactListViewModel
 import io.reactivex.rxjava3.subjects.PublishSubject
+import javax.inject.Inject
 
 class ContactListFragment : Fragment() {
 
+    @Inject
+    lateinit var factory: ViewModelProvider.Factory
+    private lateinit var viewModel: ContactListViewModel
     private var recyclerView: RecyclerView? = null
     private var progressBar: ProgressBar? = null
     private var adapter: ContactListAdapter? = null
     private var itemClickListener: ItemClickListener? = null
     private var isContactPermissionGranted = true
     private var displayer: ContactPermissionDialog.PermissionDialogDisplayer? = null
-    private var viewModel: ContactListViewModel? = null
     val requestPermissionLauncher =
         registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted: Boolean ->
             if (isGranted) {
@@ -63,7 +67,7 @@ class ContactListFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        viewModel = ViewModelProvider(this).get(ContactListViewModel::class.java)
+        injectFragment()
     }
 
     override fun onCreateView(
@@ -114,16 +118,27 @@ class ContactListFragment : Fragment() {
         requestPermissionLauncher.unregister()
     }
 
-    private fun initProgressBar() {
-        progressBar = requireView().findViewById(R.id.progress_bar_contact_list)
-        viewModel?.isLoadingIndicatorVisible?.observe(viewLifecycleOwner, Observer { isLoadingIndicatorVisible ->
-            progressBar?.isVisible = isLoadingIndicatorVisible
-        })
+    private fun injectFragment() {
+        (activity?.application as ContactApplication)
+            .appComponent
+            .contactListComponent()
+            .inject(this)
+        viewModel = ViewModelProvider(this, factory).get(ContactListViewModel::class.java)
     }
 
-    private fun initViewModel(){
+    private fun initProgressBar() {
+        progressBar = requireView().findViewById(R.id.progress_bar_contact_list)
+        viewModel?.isLoadingIndicatorVisible?.observe(
+            viewLifecycleOwner,
+            Observer { isLoadingIndicatorVisible ->
+                progressBar?.isVisible = isLoadingIndicatorVisible
+            })
+    }
+
+    private fun initViewModel() {
         viewModel?.contacts?.observe(viewLifecycleOwner, Observer { adapter?.submitList(it) })
     }
+
     private fun initRecyclerView() {
         recyclerView = requireView().findViewById(R.id.contact_list_recycler_view)
         recyclerView?.layoutManager = LinearLayoutManager(context)
