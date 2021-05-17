@@ -15,5 +15,5 @@ abstract class ContactListViewModelModule {
     @Binds
     @IntoMap
     @ViewModelKey(ContactListViewModel::class)
-    abstract fun bindContactDetailsViewModel(viewModel: ContactListViewModel): ViewModel
+    abstract fun bindContactListViewModel(viewModel: ContactListViewModel): ViewModel
 }
