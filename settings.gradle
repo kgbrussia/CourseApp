@@ -1,2 +1,4 @@
-include ':app'
-rootProject.name = "CourseApp"
+include ':application'
+include ':java'
+include ':library'
+rootProject.name = "ContactApplication"
