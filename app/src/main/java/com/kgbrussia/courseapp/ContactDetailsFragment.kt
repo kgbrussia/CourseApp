@@ -20,6 +20,8 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import com.kgbrussia.courseapp.viewmodel.ContactDetailsViewModel
+import javax.inject.Inject
 
 const val ID_ARG = "CONTACT_ID"
 const val CONTACT_NAME = "CONTACT_NAME"
@@ -27,18 +29,19 @@ const val CONTACT_PERMISSION = "CONTACT_PERMISSION"
 
 class ContactDetailsFragment : Fragment() {
 
+    @Inject
+    lateinit var factory: ViewModelProvider.Factory
+    private lateinit var viewModel: ContactDetailsViewModel
     private var displayer: ContactPermissionDialog.PermissionDialogDisplayer? = null
     private var currentContact: Contact? = null
     private var isNotificationsEnabled = false
     private var buttonReminder: Button? = null
     private var progressBar: ProgressBar? = null
     private var contactId: Int = arguments?.getInt(ID_ARG) ?: 0
-    private var viewModel: ContactDetailsViewModel? = null
     private var contactObserver = Observer<Contact> {
         currentContact = it
         displayScreenData()
     }
-
     val requestPermissionLauncher =
         registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted: Boolean ->
             if (isGranted) {
@@ -68,7 +71,7 @@ class ContactDetailsFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        viewModel = ViewModelProvider(this).get(ContactDetailsViewModel::class.java)
+        injectFragment()
     }
 
     override fun onCreateView(
@@ -102,6 +105,14 @@ class ContactDetailsFragment : Fragment() {
         requestPermissionLauncher.unregister()
     }
 
+    private fun injectFragment() {
+        (activity?.application as ContactApplication)
+            .appComponent
+            .contactDetailsComponent()
+            .inject(this)
+        viewModel = ViewModelProvider(this, factory).get(ContactDetailsViewModel::class.java)
+    }
+
     private fun checkPermission() {
         when {
             ContextCompat.checkSelfPermission(
@@ -118,18 +129,21 @@ class ContactDetailsFragment : Fragment() {
             }
         }
     }
+
     private fun initProgressBar() {
         progressBar = requireView().findViewById(R.id.progress_bar_details)
-        viewModel?.isLoadingIndicatorVisible?.observe(viewLifecycleOwner, Observer { isLoadingIndicatorVisible ->
-            progressBar?.isVisible = isLoadingIndicatorVisible
-        })
+        viewModel?.isLoadingIndicatorVisible?.observe(
+            viewLifecycleOwner,
+            Observer { isLoadingIndicatorVisible ->
+                progressBar?.isVisible = isLoadingIndicatorVisible
+            })
     }
 
-    private fun initViewModel(){
+    private fun initViewModel() {
         viewModel?.contact?.observe(viewLifecycleOwner, contactObserver)
     }
 
-    private fun initReminderButton(){
+    private fun initReminderButton() {
         buttonReminder = requireView().findViewById(R.id.button_birthday_reminder)
         updateButtonState()
         buttonReminder?.setOnClickListener { clickOnNotificationButton() }
@@ -188,7 +202,7 @@ class ContactDetailsFragment : Fragment() {
     }
 
     private fun loadContactInfoById() =
-        viewModel?.contactByIdLoaded(requireContext(), contactId.toString())
+        viewModel?.contactByIdLoaded(contactId.toString())
 
     private fun displayScreenData() {
         currentContact?.let { contact ->

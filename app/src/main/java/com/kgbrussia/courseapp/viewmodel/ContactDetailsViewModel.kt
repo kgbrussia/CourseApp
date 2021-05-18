@@ -1,17 +1,21 @@
-package com.kgbrussia.courseapp
+package com.kgbrussia.courseapp.viewmodel
 
-import android.content.Context
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.kgbrussia.courseapp.Contact
+import com.kgbrussia.courseapp.ContactRepository
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 import io.reactivex.rxjava3.kotlin.addTo
 import io.reactivex.rxjava3.kotlin.subscribeBy
 import io.reactivex.rxjava3.schedulers.Schedulers
 import timber.log.Timber
+import javax.inject.Inject
 
-class ContactDetailsViewModel : ViewModel() {
+class ContactDetailsViewModel
+@Inject constructor(private val ContactProviderRepository: ContactRepository)
+    : ViewModel() {
 
     val contact: LiveData<Contact> get() = _contact
     val isLoadingIndicatorVisible: LiveData<Boolean> get() = _isLoadingIndicatorVisible
@@ -24,8 +28,8 @@ class ContactDetailsViewModel : ViewModel() {
         super.onCleared()
     }
 
-    fun contactByIdLoaded(context: Context, id: String) {
-        ContactLoaderRepository.loadContact(context, id)
+    fun contactByIdLoaded(id: String) {
+        ContactProviderRepository.loadContact(id)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .doOnSubscribe { _isLoadingIndicatorVisible.postValue(true) }
