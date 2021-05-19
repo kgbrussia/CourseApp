@@ -1,9 +1,9 @@
-package com.kgbrussia.application.di.modules
+package com.kgbrussia.application.di.app
 
 import android.app.Application
 import android.content.Context
-import com.kgbrussia.java.ContactDetailsRepository
-import com.kgbrussia.java.ContactListRepository
+import com.kgbrussia.java.contactdetails.ContactDetailsRepository
+import com.kgbrussia.java.contactlist.ContactListRepository
 import com.kgbrussia.library.data.ContactProviderDetailsRepository
 import com.kgbrussia.library.data.ContactProviderListRepository
 import dagger.Module

@@ -1,4 +1,4 @@
-package com.kgbrussia.application.di.modules
+package com.kgbrussia.application.di.contactdetails
 
 import androidx.lifecycle.ViewModel
 import com.kgbrussia.application.di.key.ViewModelKey

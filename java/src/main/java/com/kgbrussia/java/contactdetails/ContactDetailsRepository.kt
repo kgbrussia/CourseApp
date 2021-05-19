@@ -1,11 +1,8 @@
-package com.kgbrussia.java
+package com.kgbrussia.java.contactdetails
 
+import com.kgbrussia.java.ContactEntity
 import io.reactivex.rxjava3.core.Single
 
 interface ContactDetailsRepository {
     fun readContactById(id: String): Single<ContactEntity>
-}
-
-interface ContactListRepository {
-    fun readContacts(name: String): Single<List<ContactEntity>>
 }

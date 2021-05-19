@@ -1,9 +1,9 @@
-package com.kgbrussia.application.di.modules
+package com.kgbrussia.application.di.contactdetails
 
 import com.kgbrussia.application.di.scopes.ContactsDetailsScope
-import com.kgbrussia.java.ContactDetailsInteractor
-import com.kgbrussia.java.ContactDetailsModel
-import com.kgbrussia.java.ContactDetailsRepository
+import com.kgbrussia.java.contactdetails.ContactDetailsInteractor
+import com.kgbrussia.java.contactdetails.ContactDetailsModel
+import com.kgbrussia.java.contactdetails.ContactDetailsRepository
 import dagger.Module
 import dagger.Provides
 
