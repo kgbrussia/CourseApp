@@ -1,4 +1,4 @@
 include ':application'
-include ':java'
+include ':domain'
 include ':library'
 rootProject.name = "ContactApplication"

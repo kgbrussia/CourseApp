@@ -35,7 +35,7 @@ android {
 }
 
 dependencies {
-    implementation project(path: ':java')
+    implementation project(path: ':domain')
     implementation project(path: ':library')
 
     def dagger_version = "2.35.1"
