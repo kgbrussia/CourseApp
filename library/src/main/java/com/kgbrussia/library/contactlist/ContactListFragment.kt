@@ -21,9 +21,11 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.kgbrussia.courseapp.library.R
+import com.kgbrussia.library.birthdaynotification.ContactPermissionDialog
+import com.kgbrussia.library.contactdetails.CONTACT_PERMISSION
 import com.kgbrussia.library.di.HasComponent
 import com.kgbrussia.library.recyclers.ContactListAdapter
-import com.kgbrussia.library.viewmodel.ContactListViewModel
+import com.kgbrussia.library.contactlist.ContactListViewModel
 import io.reactivex.rxjava3.subjects.PublishSubject
 import javax.inject.Inject
 

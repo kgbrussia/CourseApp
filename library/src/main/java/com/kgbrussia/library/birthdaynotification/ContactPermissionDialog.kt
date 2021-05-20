@@ -1,4 +1,4 @@
-package com.kgbrussia.library.fragments
+package com.kgbrussia.library.birthdaynotification
 
 import android.app.AlertDialog
 import android.app.Dialog

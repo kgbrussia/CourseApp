@@ -1,4 +1,4 @@
-package com.kgbrussia.library.viewmodel
+package com.kgbrussia.library.contactlist
 
 import android.content.Context
 import androidx.lifecycle.LiveData

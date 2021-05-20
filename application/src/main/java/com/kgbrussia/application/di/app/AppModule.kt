@@ -4,8 +4,8 @@ import android.app.Application
 import android.content.Context
 import com.kgbrussia.java.contactdetails.ContactDetailsRepository
 import com.kgbrussia.java.contactlist.ContactListRepository
-import com.kgbrussia.library.data.ContactProviderDetailsRepository
-import com.kgbrussia.library.data.ContactProviderListRepository
+import com.kgbrussia.library.contactdetails.ContactProviderDetailsRepository
+import com.kgbrussia.library.contactlist.ContactProviderListRepository
 import dagger.Module
 import dagger.Provides
 import javax.inject.Singleton

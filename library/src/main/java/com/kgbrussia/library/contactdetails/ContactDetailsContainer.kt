@@ -1,6 +1,4 @@
-package com.kgbrussia.library.di
-
-import com.kgbrussia.library.fragments.ContactDetailsFragment
+package com.kgbrussia.library.contactdetails
 
 interface ContactDetailsContainer {
     fun inject(contactDetailsFragment: ContactDetailsFragment)

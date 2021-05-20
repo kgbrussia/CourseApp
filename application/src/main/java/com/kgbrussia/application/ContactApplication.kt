@@ -4,6 +4,7 @@ import android.app.Application
 import com.kgbrussia.application.di.app.AppComponent
 import com.kgbrussia.application.di.app.AppModule
 import com.kgbrussia.application.di.app.DaggerAppComponent
+import com.kgbrussia.courseapp.library.BuildConfig
 import com.kgbrussia.library.di.AppContainer
 import com.kgbrussia.library.di.HasComponent
 import timber.log.Timber

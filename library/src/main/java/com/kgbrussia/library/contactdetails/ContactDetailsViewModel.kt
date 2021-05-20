@@ -1,4 +1,4 @@
-package com.kgbrussia.library.viewmodel
+package com.kgbrussia.library.contactdetails
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData

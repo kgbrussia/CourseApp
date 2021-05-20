@@ -1,7 +1,7 @@
 package com.kgbrussia.application.di.modules
 
 import androidx.lifecycle.ViewModelProvider
-import com.kgbrussia.library.viewmodel.ViewModelFactory
+import com.kgbrussia.library.ViewModelFactory
 import dagger.Binds
 import dagger.Module
 

@@ -1,4 +1,4 @@
-package com.kgbrussia.library.receivers
+package com.kgbrussia.library.birthdaynotification
 
 import android.app.AlarmManager
 import android.app.NotificationChannel
@@ -10,8 +10,8 @@ import android.content.Intent
 import androidx.core.app.NotificationCompat
 import com.kgbrussia.courseapp.library.R
 import com.kgbrussia.library.MainActivity
-import com.kgbrussia.library.fragments.CONTACT_NAME
-import com.kgbrussia.library.fragments.ID_ARG
+import com.kgbrussia.library.contactdetails.CONTACT_NAME
+import com.kgbrussia.library.contactdetails.ID_ARG
 import java.util.*
 
 const val CHANNEL_ID = "CHANNEL_ID"

@@ -1,4 +1,4 @@
-package com.kgbrussia.library.fragments
+package com.kgbrussia.library.contactdetails
 
 import android.Manifest
 import android.app.AlarmManager
@@ -22,9 +22,9 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.kgbrussia.courseapp.library.R
 import com.kgbrussia.java.ContactEntity
+import com.kgbrussia.library.birthdaynotification.ContactBroadcastReceiver
+import com.kgbrussia.library.birthdaynotification.ContactPermissionDialog
 import com.kgbrussia.library.di.HasComponent
-import com.kgbrussia.library.receivers.ContactBroadcastReceiver
-import com.kgbrussia.library.viewmodel.ContactDetailsViewModel
 import javax.inject.Inject
 
 const val ID_ARG = "CONTACT_ID"

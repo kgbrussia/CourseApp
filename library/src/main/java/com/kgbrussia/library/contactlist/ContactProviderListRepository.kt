@@ -1,8 +1,9 @@
-package com.kgbrussia.library.data
+package com.kgbrussia.library.contactlist
 
 import android.content.Context
 import com.kgbrussia.java.ContactEntity
 import com.kgbrussia.java.contactlist.ContactListRepository
+import com.kgbrussia.library.data.ContactResolver
 import io.reactivex.rxjava3.core.Single
 import javax.inject.Inject
 

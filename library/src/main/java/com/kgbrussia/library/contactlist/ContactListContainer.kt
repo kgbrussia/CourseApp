@@ -1,4 +1,4 @@
-package com.kgbrussia.library.di
+package com.kgbrussia.library.contactlist
 
 import com.kgbrussia.library.fragments.ContactListFragment
 

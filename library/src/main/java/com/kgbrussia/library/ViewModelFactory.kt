@@ -1,4 +1,4 @@
-package com.kgbrussia.library.viewmodel
+package com.kgbrussia.library
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider

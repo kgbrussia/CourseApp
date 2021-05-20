@@ -5,6 +5,10 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import com.kgbrussia.courseapp.library.R
+import com.kgbrussia.library.birthdaynotification.ContactPermissionDialog
+import com.kgbrussia.library.contactdetails.CONTACT_PERMISSION
+import com.kgbrussia.library.contactdetails.ContactDetailsFragment
+import com.kgbrussia.library.contactdetails.ID_ARG
 import com.kgbrussia.library.fragments.*
 import java.lang.ref.WeakReference
 
