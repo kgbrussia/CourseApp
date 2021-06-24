@@ -1,4 +1,4 @@
- package com.kgbrussia.library.fragments
+package com.kgbrussia.library.fragments
 
 import android.Manifest
 import android.content.Context
@@ -133,7 +133,7 @@ class ContactListFragment : Fragment() {
 
     private fun initProgressBar() {
         progressBar = requireView().findViewById(R.id.progress_bar_contact_list)
-        viewModel?.isLoadingIndicatorVisible?.observe(
+        viewModel.isLoadingIndicatorVisible.observe(
             viewLifecycleOwner,
             { isLoadingIndicatorVisible ->
                 progressBar?.isVisible = isLoadingIndicatorVisible
@@ -141,7 +141,7 @@ class ContactListFragment : Fragment() {
     }
 
     private fun initViewModel() {
-        viewModel?.contacts?.observe(viewLifecycleOwner, { adapter?.submitList(it) })
+        viewModel.contacts.observe(viewLifecycleOwner, { adapter?.submitList(it) })
     }
 
     private fun initRecyclerView() {
@@ -174,10 +174,10 @@ class ContactListFragment : Fragment() {
                 return false
             }
         })
-        viewModel?.searchQueryEntered(requireContext(), publishSubject)
+        viewModel.searchQueryEntered(requireContext(), publishSubject)
     }
 
-    private fun loadContacts() = viewModel?.contactListLoaded(requireContext())
+    private fun loadContacts() = viewModel.contactListLoaded(requireContext())
 
     companion object {
         fun newInstance(isContactPermissionGranted: Boolean): ContactListFragment {

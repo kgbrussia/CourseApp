@@ -9,7 +9,7 @@ import com.kgbrussia.library.di.AppContainer
 import com.kgbrussia.library.di.HasComponent
 import timber.log.Timber
 
-class ContactApplication: Application(), HasComponent {
+class ContactApplication : Application(), HasComponent {
 
     val appComponent: AppComponent by lazy {
         DaggerAppComponent.builder().appModule(AppModule(this)).build()
@@ -17,7 +17,7 @@ class ContactApplication: Application(), HasComponent {
 
     override fun onCreate() {
         super.onCreate()
-        if(BuildConfig.DEBUG) {
+        if (BuildConfig.DEBUG) {
             Timber.plant(Timber.DebugTree())
         }
     }

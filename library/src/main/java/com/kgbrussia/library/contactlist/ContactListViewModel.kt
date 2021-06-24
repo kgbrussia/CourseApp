@@ -18,8 +18,7 @@ import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 class ContactListViewModel
-@Inject constructor(private val interactor: ContactListInteractor)
-    : ViewModel() {
+@Inject constructor(private val interactor: ContactListInteractor) : ViewModel() {
 
     val contacts: LiveData<List<ContactEntity>> get() = _contacts
     val isLoadingIndicatorVisible: LiveData<Boolean> get() = _isLoadingIndicatorVisible

@@ -1,4 +1,4 @@
-package com.kgbrussia.library
+package com.kgbrussia.library.contactdetails
 
 import android.app.AlarmManager
 import android.app.PendingIntent
@@ -7,8 +7,8 @@ import java.util.*
 
 class StubBirthdayNotification(
     private val intent: PendingIntent,
-    private val alarmManager: AlarmManager)
-    : NotificationRepository {
+    private val alarmManager: AlarmManager
+) : NotificationRepository {
 
     private val dummyNotifications: HashMap<Int, Long> = HashMap()
 

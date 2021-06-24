@@ -1,6 +1,5 @@
 package com.kgbrussia.library.birthdaynotification
 
-import android.app.AlarmManager
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
@@ -38,39 +37,44 @@ class ContactBroadcastReceiver : BroadcastReceiver() {
             .notificationContainer()
             .inject(this)
         val contactId = intent.extras?.getInt(ID_ARG) ?: 123
-        val contactName = intent.extras?.getString(CONTACT_NAME) ?: "batman"
+        val contactName = intent.extras?.getString(CONTACT_NAME) ?: context.getString(R.string.batman)
         createNotificationChannel(context)
         createNotification(context, contactId, contactName)
     }
 
     private fun createNotificationChannel(context: Context) {
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-            val channel = NotificationChannel(CHANNEL_ID, context.getString(
-                R.string.notification_channel_name),
-                NotificationManager.IMPORTANCE_DEFAULT)
-            (context.getSystemService(Context.NOTIFICATION_SERVICE) as? NotificationManager)?.createNotificationChannel(channel)
+            val channel = NotificationChannel(
+                CHANNEL_ID,
+                context.getString(
+                    R.string.notification_channel_name
+                ),
+                NotificationManager.IMPORTANCE_DEFAULT
+            )
+            (context.getSystemService(Context.NOTIFICATION_SERVICE) as? NotificationManager)
+                ?.createNotificationChannel(channel)
         }
     }
 
     private fun createNotification(
         context: Context,
         contactId: Int,
-        contactName: String) {
+        contactName: String
+    ) {
         val notificationIntent = Intent(context, MainActivity::class.java)
         notificationIntent.putExtra(ID_ARG, contactId)
         val pendingIntent = PendingIntent.getActivity(
             context,
             contactId,
             notificationIntent,
-            PendingIntent.FLAG_UPDATE_CURRENT)
+            PendingIntent.FLAG_UPDATE_CURRENT
+        )
         val notification = NotificationCompat.Builder(context, CHANNEL_ID)
             .setContentText(context.getString(R.string.notification_text, contactName))
             .setContentIntent(pendingIntent)
             .setAutoCancel(true)
             .build()
-        val motificationManager =
-            (context.getSystemService(Context.NOTIFICATION_SERVICE)
-                    as? NotificationManager)
+        val motificationManager = (context.getSystemService(Context.NOTIFICATION_SERVICE) as? NotificationManager)
         motificationManager?.notify(contactId, notification)
         nextBirthday(contactId, contactName)
     }

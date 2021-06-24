@@ -16,8 +16,7 @@ class ContactListAdapter(
     private val onItemClicked: (String) -> Unit
 ) : ListAdapter<ContactEntity, ContactViewHolder>(ContactListDiffUtilCallback) {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ContactViewHolder {
-        val view =
-            LayoutInflater.from(parent.context).inflate(R.layout.item_contact_card, parent, false)
+        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_contact_card, parent, false)
         return ContactViewHolder(view, onItemClicked)
     }
 
@@ -38,7 +37,7 @@ class ContactViewHolder(
         contactName.text = contact.name
         contactNumber.text = contact.phone.ifEmpty { "unknown" }
         var photoUri: Uri? = null
-        if(contact.photo != null){
+        if (contact.photo != null) {
             photoUri = Uri.parse(contact.photo)
         }
         if (photoUri != null) {
@@ -47,7 +46,7 @@ class ContactViewHolder(
             contactImage.setImageResource(R.drawable.batman)
         }
         itemView.setOnClickListener {
-            if (adapterPosition != RecyclerView.NO_POSITION){
+            if (adapterPosition != RecyclerView.NO_POSITION) {
                 onItemClicked(contact.id.toString())
             }
         }

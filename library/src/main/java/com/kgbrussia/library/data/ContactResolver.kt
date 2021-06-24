@@ -14,8 +14,9 @@ object ContactResolver {
     private const val FIND_CONTACT_BY_ID_SELECTION = "${Contacts._ID} = ?"
     private const val GET_DISPLAY_NAME_SELECTION = "${Contacts.DISPLAY_NAME} LIKE ?"
     private const val GET_LIST_PHONES_SELECTION = "${CommonDataKinds.Phone.CONTACT_ID} = ?"
-    private const val GET_BIRTHDAY_DATE_SELECTION = " AND ${Data.MIMETYPE}= '${CommonDataKinds.Event.CONTENT_ITEM_TYPE}'" +
-            " AND ${CommonDataKinds.Event.TYPE}=${CommonDataKinds.Event.TYPE_BIRTHDAY}"
+    private const val GET_BIRTHDAY_DATE_SELECTION =
+        " AND ${Data.MIMETYPE}= '${CommonDataKinds.Event.CONTENT_ITEM_TYPE}'" +
+                " AND ${CommonDataKinds.Event.TYPE}=${CommonDataKinds.Event.TYPE_BIRTHDAY}"
     private const val GET_PHOTO_URI_SELECTION = " AND ${Data.MIMETYPE}=" +
             "'${CommonDataKinds.Photo.CONTENT_ITEM_TYPE}'"
 
@@ -30,7 +31,7 @@ object ContactResolver {
         )?.use {
             while (it.moveToNext()) {
                 val contact = it.toContactForList(context.contentResolver)
-                if(contact != null) {
+                if (contact != null) {
                     contactsList.add(contact)
                 }
             }
@@ -119,7 +120,7 @@ object ContactResolver {
         var dayOfBirthday: Int? = null
         var monthOfBirthday: Int? = null
         val birthdayList = getBirthdayDate(contentResolver, id)?.split(Regex("-+"))
-        if(birthdayList?.size == 3) {
+        if (birthdayList?.size == 3) {
             monthOfBirthday = birthdayList[1].toIntOrNull()
             dayOfBirthday = birthdayList[2].toIntOrNull()
         }

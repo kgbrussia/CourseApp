@@ -22,7 +22,7 @@ class NotificationModelTest {
     private val contact = ContactEntity(
         id = 1,
         name = "Иван Иванович",
-        phone ="",
+        phone = "",
         dayOfBirthday = 8,
         monthOfBirthday = 9,
         photo = ""
@@ -30,23 +30,20 @@ class NotificationModelTest {
 
     @Before
     fun before() {
-        notificationRepository =
-            Mockito.mock(NotificationRepository::class.java)
+        notificationRepository = Mockito.mock(NotificationRepository::class.java)
         calendarRepository = CalendarModel()
-        notificationInteractor =
-            NotificationModel(calendarRepository, notificationRepository)
+        notificationInteractor = NotificationModel(calendarRepository, notificationRepository)
     }
 
     @Test
     fun `successfully adding a reminder`() {
-        Mockito.`when`(notificationRepository.checkNotificationState(contact.id))
-            .thenReturn(true)
+        Mockito.`when`(notificationRepository.checkNotificationState(contact.id)).thenReturn(true)
         calendarRepository.setCalendarDate(9, Calendar.SEPTEMBER, 1999)
         notificationInteractor.newNotification(
             contact.id,
             contact.name,
             contact.dayOfBirthday!!,
-            contact.monthOfBirthday!!-1
+            contact.monthOfBirthday!! - 1
         )
         val nextBirthday = Calendar.getInstance().apply {
             set(Calendar.YEAR, 2000)
@@ -57,20 +54,18 @@ class NotificationModelTest {
             set(Calendar.SECOND, 0)
             set(Calendar.MILLISECOND, 0)
         }
-        Mockito.verify(notificationRepository)
-            .createNotification(contact.id, contact.name, nextBirthday)
+        Mockito.verify(notificationRepository).createNotification(contact.id, contact.name, nextBirthday)
     }
 
     @Test
     fun `successful addition of a reminder bd was not yet in the current year`() {
-        Mockito.`when`(notificationRepository.checkNotificationState(contact.id))
-            .thenReturn(true)
+        Mockito.`when`(notificationRepository.checkNotificationState(contact.id)).thenReturn(true)
         calendarRepository.setCalendarDate(7, Calendar.SEPTEMBER, 1999)
         notificationInteractor.newNotification(
             contact.id,
             contact.name,
             contact.dayOfBirthday!!,
-            contact.monthOfBirthday!!-1
+            contact.monthOfBirthday!! - 1
         )
         val nextBirthday = Calendar.getInstance().apply {
             set(Calendar.YEAR, 1999)
@@ -81,14 +76,12 @@ class NotificationModelTest {
             set(Calendar.SECOND, 0)
             set(Calendar.MILLISECOND, 0)
         }
-        Mockito.verify(notificationRepository)
-            .createNotification(contact.id, contact.name, nextBirthday)
+        Mockito.verify(notificationRepository).createNotification(contact.id, contact.name, nextBirthday)
     }
 
     @Test
     fun `successfully deleting a reminder`() {
-        Mockito.`when`(notificationRepository.checkNotificationState(contact.id))
-            .thenReturn(false)
+        Mockito.`when`(notificationRepository.checkNotificationState(contact.id)).thenReturn(false)
         val nextBirthday = Calendar.getInstance().apply {
             set(Calendar.YEAR, 2000)
             set(Calendar.MONTH, Calendar.SEPTEMBER)
@@ -102,12 +95,13 @@ class NotificationModelTest {
         notificationRepository.createNotification(
             contact.id,
             contact.name,
-            nextBirthday)
+            nextBirthday
+        )
         notificationInteractor.newNotification(
             contact.id,
             contact.name,
             contact.dayOfBirthday!!,
-            contact.monthOfBirthday!!-1
+            contact.monthOfBirthday!! - 1
         )
         Mockito.verify(notificationRepository).deleteNotification(contact.id)
     }
@@ -119,26 +113,24 @@ class NotificationModelTest {
             dayOfBirthday = 29,
             monthOfBirthday = 2,
         )
-        Mockito.`when`(notificationRepository.checkNotificationState(contact.id))
-            .thenReturn(true)
+        Mockito.`when`(notificationRepository.checkNotificationState(contact.id)).thenReturn(true)
         calendarRepository.setCalendarDate(2, Calendar.MARCH, 1999)
         notificationInteractor.newNotification(
             contact.id,
             contact.name,
             contact.dayOfBirthday!!,
-            contact.monthOfBirthday!!-1
+            contact.monthOfBirthday!! - 1
         )
         val nextBirthday = Calendar.getInstance().apply {
             set(Calendar.YEAR, 2000)
-            set(Calendar.MONTH,  Calendar.FEBRUARY)
+            set(Calendar.MONTH, Calendar.FEBRUARY)
             set(Calendar.DATE, 29)
             set(Calendar.HOUR, 0)
             set(Calendar.MINUTE, 0)
             set(Calendar.SECOND, 0)
             set(Calendar.MILLISECOND, 0)
         }
-        Mockito.verify(notificationRepository)
-            .createNotification(contact.id, contact.name, nextBirthday)
+        Mockito.verify(notificationRepository).createNotification(contact.id, contact.name, nextBirthday)
     }
 
     @Test
@@ -148,14 +140,13 @@ class NotificationModelTest {
             dayOfBirthday = 29,
             monthOfBirthday = 2,
         )
-        Mockito.`when`(notificationRepository.checkNotificationState(contact.id))
-            .thenReturn(true)
+        Mockito.`when`(notificationRepository.checkNotificationState(contact.id)).thenReturn(true)
         calendarRepository.setCalendarDate(1, Calendar.MARCH, 2000)
         notificationInteractor.newNotification(
             contact.id,
             contact.name,
             contact.dayOfBirthday!!,
-            contact.monthOfBirthday!!-1
+            contact.monthOfBirthday!! - 1
         )
         val nextBirthday = Calendar.getInstance().apply {
             set(Calendar.YEAR, 2004)
@@ -166,11 +157,6 @@ class NotificationModelTest {
             set(Calendar.SECOND, 0)
             set(Calendar.MILLISECOND, 0)
         }
-        Mockito.verify(notificationRepository)
-            .createNotification(contact.id, contact.name, nextBirthday)
-    }
-
-    @After
-    fun tearDown() {
+        Mockito.verify(notificationRepository).createNotification(contact.id, contact.name, nextBirthday)
     }
 }

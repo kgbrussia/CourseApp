@@ -8,8 +8,7 @@ import com.kgbrussia.java.notification.NotificationRepository
 import java.util.*
 import javax.inject.Inject
 
-class BirthdayNotification
-@Inject constructor(private val context: Context) : NotificationRepository {
+class BirthdayNotification @Inject constructor(private val context: Context) : NotificationRepository {
 
     private val intent = Intent(context, ContactBroadcastReceiver::class.java)
 

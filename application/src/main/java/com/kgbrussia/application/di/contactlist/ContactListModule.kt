@@ -11,6 +11,6 @@ import dagger.Provides
 class ContactListModule {
     @ContactsListScope
     @Provides
-    fun providesContactListInteractor(repository: ContactListRepository): ContactListInteractor
-            = ContactListModel(repository)
+    fun providesContactListInteractor(repository: ContactListRepository): ContactListInteractor =
+        ContactListModel(repository)
 }

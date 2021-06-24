@@ -3,15 +3,12 @@ package com.kgbrussia.library.contactdetails
 import android.app.AlarmManager
 import android.app.PendingIntent
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import com.kgbrussia.java.ContactEntity
 import com.kgbrussia.java.calendar.CalendarModel
 import com.kgbrussia.java.calendar.CalendarRepository
 import com.kgbrussia.java.contactdetails.ContactDetailsInteractor
 import com.kgbrussia.java.notification.NotificationInteractor
 import com.kgbrussia.java.notification.NotificationModel
 import com.kgbrussia.java.notification.NotificationRepository
-import com.kgbrussia.library.StubBirthdayNotification
-import org.junit.After
 import org.junit.Before
 
 import org.junit.Rule
@@ -44,27 +41,14 @@ class ContactDetailsViewModelTest {
     private lateinit var viewModel: ContactDetailsViewModel
     private lateinit var birthdayNotification: NotificationRepository
 
-    private val contact = ContactEntity(
-        id = 1,
-        name = "Иван Иванович",
-        phone = "",
-        dayOfBirthday = 8,
-        monthOfBirthday = 9,
-        photo = ""
-    )
+    private val contact = TestContactEntity.contact
 
     @Before
     fun before() {
-        birthdayNotification =
-            StubBirthdayNotification(intent, alarmManager)
+        birthdayNotification = StubBirthdayNotification(intent, alarmManager)
         calendarRepository = CalendarModel()
-        notificationInteractor =
-            NotificationModel(calendarRepository, birthdayNotification)
-        viewModel =
-            ContactDetailsViewModel(
-                contactDetailsInteractor,
-                notificationInteractor
-            )
+        notificationInteractor = NotificationModel(calendarRepository, birthdayNotification)
+        viewModel = ContactDetailsViewModel(contactDetailsInteractor, notificationInteractor)
     }
 
     @Test
@@ -80,8 +64,7 @@ class ContactDetailsViewModelTest {
             set(Calendar.SECOND, 0)
             set(Calendar.MILLISECOND, 0)
         }
-        verify(alarmManager)
-            .set(AlarmManager.RTC_WAKEUP, nextBirthday.timeInMillis, intent)
+        verify(alarmManager).set(AlarmManager.RTC_WAKEUP, nextBirthday.timeInMillis, intent)
     }
 
     @Test
@@ -97,8 +80,7 @@ class ContactDetailsViewModelTest {
             set(Calendar.SECOND, 0)
             set(Calendar.MILLISECOND, 0)
         }
-        verify(alarmManager)
-            .set(AlarmManager.RTC_WAKEUP, nextBirthday.timeInMillis, intent)
+        verify(alarmManager).set(AlarmManager.RTC_WAKEUP, nextBirthday.timeInMillis, intent)
     }
 
     @Test
@@ -137,8 +119,7 @@ class ContactDetailsViewModelTest {
             set(Calendar.SECOND, 0)
             set(Calendar.MILLISECOND, 0)
         }
-        verify(alarmManager)
-            .set(AlarmManager.RTC_WAKEUP, nextBirthday.timeInMillis, intent)
+        verify(alarmManager).set(AlarmManager.RTC_WAKEUP, nextBirthday.timeInMillis, intent)
     }
 
     @Test
@@ -160,11 +141,6 @@ class ContactDetailsViewModelTest {
             set(Calendar.SECOND, 0)
             set(Calendar.MILLISECOND, 0)
         }
-        verify(alarmManager)
-            .set(AlarmManager.RTC_WAKEUP, nextBirthday.timeInMillis, intent)
-    }
-
-    @After
-    fun tearDown() {
+        verify(alarmManager).set(AlarmManager.RTC_WAKEUP, nextBirthday.timeInMillis, intent)
     }
 }

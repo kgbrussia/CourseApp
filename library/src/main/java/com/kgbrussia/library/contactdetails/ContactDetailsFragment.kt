@@ -1,6 +1,7 @@
 package com.kgbrussia.library.contactdetails
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.pm.PackageManager
 import android.net.Uri
@@ -160,16 +161,18 @@ class ContactDetailsFragment : Fragment() {
     }
 
     private fun loadContactInfoById() {
-        return viewModel?.contactByIdLoaded(contactId.toString())}
+        return viewModel?.contactByIdLoaded(contactId.toString())
+    }
 
 
+    @SuppressLint("SetTextI18n")
     private fun displayScreenData() {
         currentContact?.let { contact ->
             requireView().findViewById<TextView>(R.id.textViewName).text = contact.name
             requireView().findViewById<TextView>(R.id.textViewPhoneNumber).text = contact.phone
             val imageViewPhoto = requireView().findViewById<ImageView>(R.id.imageViewPhoto)
             var photoUri: Uri? = null
-            if(contact.photo != null){
+            if (contact.photo != null) {
                 photoUri = Uri.parse(contact.photo)
             }
             if (photoUri != null) {

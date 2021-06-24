@@ -2,7 +2,7 @@ package com.kgbrussia.java.calendar
 
 import java.util.*
 
-class CalendarModel: CalendarRepository {
+class CalendarModel : CalendarRepository {
     private var calendar = Calendar.getInstance()
 
     override fun getCalendar(): Calendar = calendar

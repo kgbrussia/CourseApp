@@ -14,18 +14,17 @@ import io.reactivex.rxjava3.schedulers.Schedulers
 import timber.log.Timber
 import javax.inject.Inject
 
-class ContactDetailsViewModel
-@Inject constructor(
+class ContactDetailsViewModel @Inject constructor(
     private val interactor: ContactDetailsInteractor,
     private val notificationInteractor: NotificationInteractor
 ) : ViewModel() {
 
-    val contact: LiveData<ContactEntity> get() = _contact
-    val isLoadingIndicatorVisible: LiveData<Boolean> get() = _isLoadingIndicatorVisible
-    val isNotificationEnabled: LiveData<Boolean> get() = _isNotificationEnabled
-    private val _isNotificationEnabled: MutableLiveData<Boolean> = MutableLiveData()
-    private val _contact: MutableLiveData<ContactEntity> = MutableLiveData()
-    private val _isLoadingIndicatorVisible: MutableLiveData<Boolean> = MutableLiveData()
+    val contact: LiveData<ContactEntity> get() = mutableContact
+    val isLoadingIndicatorVisible: LiveData<Boolean> get() = mutableIsLoadingIndicatorVisible
+    val isNotificationEnabled: LiveData<Boolean> get() = mutableIsNotificationEnabled
+    private val mutableIsNotificationEnabled: MutableLiveData<Boolean> = MutableLiveData()
+    private val mutableContact: MutableLiveData<ContactEntity> = MutableLiveData()
+    private val mutableIsLoadingIndicatorVisible: MutableLiveData<Boolean> = MutableLiveData()
     private val disposable: CompositeDisposable = CompositeDisposable()
 
     override fun onCleared() {
@@ -37,11 +36,11 @@ class ContactDetailsViewModel
         interactor.loadContactById(id)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
-            .doOnSubscribe { _isLoadingIndicatorVisible.postValue(true) }
-            .doOnTerminate { _isLoadingIndicatorVisible.postValue(false) }
+            .doOnSubscribe { mutableIsLoadingIndicatorVisible.postValue(true) }
+            .doOnTerminate { mutableIsLoadingIndicatorVisible.postValue(false) }
             .subscribeBy(
                 onSuccess = {
-                    _contact.postValue(it)
+                    mutableContact.postValue(it)
                 },
                 onError = {
                     Timber.e(it)
@@ -51,17 +50,17 @@ class ContactDetailsViewModel
     }
 
     fun checkNotificationState(id: Int) =
-        _isNotificationEnabled.postValue(!notificationInteractor.checkNotificationState(id))
+        mutableIsNotificationEnabled.postValue(!notificationInteractor.checkNotificationState(id))
 
     fun newNotification(contact: ContactEntity) {
         val day = contact.dayOfBirthday ?: 1
         val month = contact.monthOfBirthday ?: 1
-            notificationInteractor.newNotification(
-                contact.id,
-                contact.name,
-                day,
-                month - 1
-            )
+        notificationInteractor.newNotification(
+            contact.id,
+            contact.name,
+            day,
+            month - 1
+        )
         checkNotificationState(contact.id)
     }
 }
