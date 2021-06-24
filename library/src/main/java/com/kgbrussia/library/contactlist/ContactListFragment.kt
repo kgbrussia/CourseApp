@@ -21,7 +21,7 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.kgbrussia.courseapp.library.R
-import com.kgbrussia.library.birthdaynotification.ContactPermissionDialog
+import com.kgbrussia.library.ContactPermissionDialog
 import com.kgbrussia.library.contactdetails.CONTACT_PERMISSION
 import com.kgbrussia.library.di.HasComponent
 import com.kgbrussia.library.recyclers.ContactListAdapter
@@ -135,13 +135,13 @@ class ContactListFragment : Fragment() {
         progressBar = requireView().findViewById(R.id.progress_bar_contact_list)
         viewModel?.isLoadingIndicatorVisible?.observe(
             viewLifecycleOwner,
-            Observer { isLoadingIndicatorVisible ->
+            { isLoadingIndicatorVisible ->
                 progressBar?.isVisible = isLoadingIndicatorVisible
             })
     }
 
     private fun initViewModel() {
-        viewModel?.contacts?.observe(viewLifecycleOwner, Observer { adapter?.submitList(it) })
+        viewModel?.contacts?.observe(viewLifecycleOwner, { adapter?.submitList(it) })
     }
 
     private fun initRecyclerView() {

@@ -1,4 +1,4 @@
-package com.kgbrussia.library.birthdaynotification
+package com.kgbrussia.library
 
 import android.app.AlertDialog
 import android.app.Dialog
@@ -6,7 +6,6 @@ import android.os.Bundle
 import androidx.core.os.bundleOf
 import androidx.fragment.app.DialogFragment
 import com.kgbrussia.courseapp.library.R
-import com.kgbrussia.library.MainActivity
 
 const val TITLE_DIALOG = "TITLE_DIALOG"
 

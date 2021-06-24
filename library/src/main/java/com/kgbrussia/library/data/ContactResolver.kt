@@ -109,8 +109,8 @@ object ContactResolver {
             id = id.toInt(),
             name = getString(getColumnIndex(Contacts.DISPLAY_NAME)) ?: "",
             phone = getPhoneNumber(contentResolver, id) ?: "",
-            dayOfBirthday = null,
-            monthOfBirthday = null,
+            dayOfBirthday = 1,
+            monthOfBirthday = 1,
             photo = getPhotoUri(contentResolver, id)
         )
     }
