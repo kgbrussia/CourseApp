@@ -16,6 +16,7 @@
     <!-- Contact Broadcast Receiver -->
     <string name="notification_channel_name">notification channel name</string>
     <string name="notification_text">Today birthday of %1$s</string>
+    <string name="batman">batman</string>
 
     <!-- Contact Permission Dialog -->
     <string name="contactPermissionDialogTitle">Access to Contacts</string>

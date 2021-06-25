@@ -13,7 +13,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <receiver
-            android:name="com.kgbrussia.library.receivers.ContactBroadcastReceiver"
+            android:name="com.kgbrussia.library.birthdaynotification.ContactBroadcastReceiver"
             android:enabled="true">
             <intent-filter>
                 <action android:name="android.broadcast" />
