@@ -3,9 +3,8 @@ package com.kgbrussia.library.data
 import android.content.ContentResolver
 import android.content.Context
 import android.database.Cursor
-import android.net.Uri
-import android.provider.ContactsContract.Contacts
 import android.provider.ContactsContract.CommonDataKinds
+import android.provider.ContactsContract.Contacts
 import android.provider.ContactsContract.Data
 import com.kgbrussia.java.ContactEntity
 
@@ -16,9 +15,9 @@ object ContactResolver {
     private const val GET_LIST_PHONES_SELECTION = "${CommonDataKinds.Phone.CONTACT_ID} = ?"
     private const val GET_BIRTHDAY_DATE_SELECTION =
         " AND ${Data.MIMETYPE}= '${CommonDataKinds.Event.CONTENT_ITEM_TYPE}'" +
-                " AND ${CommonDataKinds.Event.TYPE}=${CommonDataKinds.Event.TYPE_BIRTHDAY}"
+            " AND ${CommonDataKinds.Event.TYPE}=${CommonDataKinds.Event.TYPE_BIRTHDAY}"
     private const val GET_PHOTO_URI_SELECTION = " AND ${Data.MIMETYPE}=" +
-            "'${CommonDataKinds.Photo.CONTENT_ITEM_TYPE}'"
+        "'${CommonDataKinds.Photo.CONTENT_ITEM_TYPE}'"
 
     fun getContactsList(context: Context, name: String): List<ContactEntity> {
         val contactsList = mutableListOf<ContactEntity>()

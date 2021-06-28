@@ -6,15 +6,19 @@ import android.content.Context
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.*
-import androidx.core.os.bundleOf
+import android.widget.Button
+import android.widget.ImageView
+import android.widget.ProgressBar
+import android.widget.TextView
+import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
+import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.kgbrussia.courseapp.library.R
@@ -74,7 +78,8 @@ class ContactDetailsFragment : Fragment() {
     }
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
+        inflater: LayoutInflater,
+        container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         return inflater.inflate(R.layout.fragment_contact_details, container, false)
@@ -132,15 +137,16 @@ class ContactDetailsFragment : Fragment() {
 
     private fun initProgressBar() {
         progressBar = requireView().findViewById(R.id.progress_bar_details)
-        viewModel?.isLoadingIndicatorVisible?.observe(
+        viewModel.isLoadingIndicatorVisible.observe(
             viewLifecycleOwner,
             { isLoadingIndicatorVisible ->
                 progressBar?.isVisible = isLoadingIndicatorVisible
-            })
+            }
+        )
     }
 
     private fun initViewModel() {
-        viewModel?.contact?.observe(viewLifecycleOwner, contactObserver)
+        viewModel.contact.observe(viewLifecycleOwner, contactObserver)
     }
 
     private fun initReminder() {
@@ -161,9 +167,8 @@ class ContactDetailsFragment : Fragment() {
     }
 
     private fun loadContactInfoById() {
-        return viewModel?.contactByIdLoaded(contactId.toString())
+        return viewModel.contactByIdLoaded(contactId.toString())
     }
-
 
     @SuppressLint("SetTextI18n")
     private fun displayScreenData() {

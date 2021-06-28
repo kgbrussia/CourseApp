@@ -5,7 +5,7 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import com.kgbrussia.java.notification.NotificationRepository
-import java.util.*
+import java.util.Calendar
 import javax.inject.Inject
 
 class BirthdayNotification @Inject constructor(private val context: Context) : NotificationRepository {

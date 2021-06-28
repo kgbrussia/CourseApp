@@ -15,7 +15,7 @@ import com.kgbrussia.library.MainActivity
 import com.kgbrussia.library.contactdetails.CONTACT_NAME
 import com.kgbrussia.library.contactdetails.ID_ARG
 import com.kgbrussia.library.di.HasComponent
-import java.util.*
+import java.util.Calendar
 import javax.inject.Inject
 
 const val CHANNEL_ID = "CHANNEL_ID"

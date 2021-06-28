@@ -61,8 +61,8 @@ object ContactListDiffUtilCallback : DiffUtil.ItemCallback<ContactEntity>() {
     override fun areContentsTheSame(oldItem: ContactEntity, newItem: ContactEntity): Boolean {
         return if (oldItem.phone.isNotEmpty() && newItem.phone.isNotEmpty()) {
             oldItem.name == newItem.name &&
-                    oldItem.phone == newItem.phone &&
-                    oldItem.photo == newItem.photo
+                oldItem.phone == newItem.phone &&
+                oldItem.photo == newItem.photo
         } else {
             oldItem.name == newItem.name && oldItem.photo == newItem.photo
         }

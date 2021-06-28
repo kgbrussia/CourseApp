@@ -10,7 +10,6 @@ import com.kgbrussia.java.notification.NotificationInteractor
 import com.kgbrussia.java.notification.NotificationModel
 import com.kgbrussia.java.notification.NotificationRepository
 import org.junit.Before
-
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.TestRule
@@ -18,7 +17,7 @@ import org.junit.runner.RunWith
 import org.mockito.Mock
 import org.mockito.Mockito.verify
 import org.mockito.junit.MockitoJUnitRunner
-import java.util.*
+import java.util.Calendar
 
 @RunWith(MockitoJUnitRunner::class)
 class ContactDetailsViewModelTest {

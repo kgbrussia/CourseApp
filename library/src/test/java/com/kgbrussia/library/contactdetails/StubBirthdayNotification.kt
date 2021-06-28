@@ -3,7 +3,7 @@ package com.kgbrussia.library.contactdetails
 import android.app.AlarmManager
 import android.app.PendingIntent
 import com.kgbrussia.java.notification.NotificationRepository
-import java.util.*
+import java.util.Calendar
 
 class StubBirthdayNotification(
     private val intent: PendingIntent,

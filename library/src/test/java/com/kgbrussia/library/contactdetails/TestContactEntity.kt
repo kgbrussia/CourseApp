@@ -2,7 +2,7 @@ package com.kgbrussia.library.contactdetails
 
 import com.kgbrussia.java.ContactEntity
 
-object TestContactEntity{
+object TestContactEntity {
     val contact = ContactEntity(
         id = 1,
         name = "Иван Иванович",

@@ -1,6 +1,6 @@
 package com.kgbrussia.java.calendar
 
-import java.util.*
+import java.util.Calendar
 
 interface CalendarRepository {
     fun getCalendar(): Calendar
