@@ -3,14 +3,13 @@ package com.kgbrussia.java.notification
 import com.kgbrussia.java.ContactEntity
 import com.kgbrussia.java.calendar.CalendarModel
 import com.kgbrussia.java.calendar.CalendarRepository
-import org.junit.After
 import org.junit.Before
+import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mock
-import org.mockito.junit.MockitoJUnitRunner
-import org.junit.Test
 import org.mockito.Mockito
-import java.util.*
+import org.mockito.junit.MockitoJUnitRunner
+import java.util.Calendar
 
 @RunWith(MockitoJUnitRunner::class)
 class NotificationModelTest {

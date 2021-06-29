@@ -1,6 +1,6 @@
 package com.kgbrussia.application.di.contactdetails
 
-import com.kgbrussia.application.di.scopes.ContactsDetailsScope
+import com.kgbrussia.application.di.scopes.ContactDetailsScope
 import com.kgbrussia.java.calendar.CalendarRepository
 import com.kgbrussia.java.contactdetails.ContactDetailsInteractor
 import com.kgbrussia.java.contactdetails.ContactDetailsModel
@@ -13,12 +13,12 @@ import dagger.Provides
 
 @Module
 class ContactDetailsModule {
-    @ContactsDetailsScope
+    @ContactDetailsScope
     @Provides
     fun providesContactDetailsInteractor(repository: ContactDetailsRepository): ContactDetailsInteractor =
         ContactDetailsModel(repository)
 
-    @ContactsDetailsScope
+    @ContactDetailsScope
     @Provides
     fun providesBirthdayNotificationInteractor(
         notificationRepository: NotificationRepository,

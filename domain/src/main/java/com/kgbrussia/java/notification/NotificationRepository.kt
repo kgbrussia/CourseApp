@@ -1,6 +1,6 @@
 package com.kgbrussia.java.notification
 
-import java.util.*
+import java.util.Calendar
 
 interface NotificationRepository {
     fun createNotification(id: Int, name: String, date: Calendar)

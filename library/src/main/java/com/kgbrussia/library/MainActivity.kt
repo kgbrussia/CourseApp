@@ -2,19 +2,21 @@ package com.kgbrussia.library
 
 import android.Manifest
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import androidx.appcompat.app.AppCompatActivity
 import com.kgbrussia.courseapp.library.R
 import com.kgbrussia.library.contactdetails.CONTACT_PERMISSION
 import com.kgbrussia.library.contactdetails.ContactDetailsFragment
 import com.kgbrussia.library.contactdetails.ID_ARG
-import com.kgbrussia.library.fragments.*
+import com.kgbrussia.library.fragments.ContactListFragment
+import com.kgbrussia.library.fragments.ItemClickListener
 import java.lang.ref.WeakReference
 
 private const val FRAGMENT_TAG = "FRAGMENT_TAG"
 const val DIALOG_TAG = "DIALOG_TAG"
 
-class MainActivity : AppCompatActivity(),
+class MainActivity :
+    AppCompatActivity(),
     ItemClickListener,
     ContactPermissionDialog.PermissionDialogDisplayer {
 
@@ -50,7 +52,7 @@ class MainActivity : AppCompatActivity(),
     }
 
     override fun onItemClicked(id: String) {
-        println("onItemClicked ${id}")
+        println("onItemClicked $id")
         supportFragmentManager
             .beginTransaction()
             .replace(R.id.fragment_container, ContactDetailsFragment.newInstance(id))
@@ -90,7 +92,7 @@ class MainActivity : AppCompatActivity(),
             fragmentManager.popBackStack()
         }
         val id: String = requireNotNull(intent?.extras?.getString(ID_ARG))
-        println("startContactDetailsFromNotification ${id}")
+        println("startContactDetailsFromNotification $id")
         onItemClicked(id)
     }
 

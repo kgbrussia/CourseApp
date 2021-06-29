@@ -16,7 +16,9 @@ class ContactPermissionDialog : DialogFragment() {
         return AlertDialog.Builder(activity)
             .setTitle(R.string.contactPermissionDialogTitle)
             .setMessage(message)
-            .setPositiveButton(R.string.contactPermissionDialogButton) { _, _ -> (activity as? MainActivity)?.checkPermission() }
+            .setPositiveButton(R.string.contactPermissionDialogButton) { _, _ ->
+                (activity as? MainActivity)?.checkPermission()
+            }
             .create()
     }
 

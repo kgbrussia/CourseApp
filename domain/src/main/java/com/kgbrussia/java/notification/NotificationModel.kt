@@ -1,7 +1,7 @@
 package com.kgbrussia.java.notification
 
 import com.kgbrussia.java.calendar.CalendarRepository
-import java.util.*
+import java.util.Calendar
 
 class NotificationModel(
     private val calendarRepository: CalendarRepository,
@@ -39,13 +39,15 @@ class NotificationModel(
         val month = calendar.get(Calendar.MONTH)
         val day = calendar.get(Calendar.DAY_OF_MONTH)
         var newYear = calendar.get(Calendar.YEAR)
-        if (month > monthOfBirthday || (month == monthOfBirthday
-                    && day >= dayOfBirthday)
+        if (month > monthOfBirthday || (
+            month == monthOfBirthday &&
+                day >= dayOfBirthday
+            )
         ) {
             newYear++
         }
-        if (monthOfBirthday == Calendar.FEBRUARY
-            && dayOfBirthday == 29
+        if (monthOfBirthday == Calendar.FEBRUARY &&
+            dayOfBirthday == 29
         ) {
             while (!isLeap(newYear)) {
                 newYear++
